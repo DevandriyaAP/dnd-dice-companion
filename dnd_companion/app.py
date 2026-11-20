@@ -62,10 +62,6 @@ def get_default_api_key():
 
 class Api:
     def set_on_top(self, val):
-        global _window
-        if _window:
-            _window.on_top = bool(val)
-            return True
         return False
 
     def minimize(self):

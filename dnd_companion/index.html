@@ -778,6 +778,31 @@
       min-width: 22px;
       text-align: center;
     }
+    input.mod-num {
+      width: 38px;
+      height: 20px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 5px;
+      padding: 0 2px;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-align: center;
+      outline: none;
+      transition: all 0.15s;
+    }
+    input.mod-num:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    input.mod-num:focus {
+      background: rgba(0, 0, 0, 0.6);
+      border-color: var(--gold);
+      color: var(--gold);
+      box-shadow: 0 0 6px rgba(245, 158, 11, 0.35);
+    }
 
     /* Action Buttons */
     .action-bar {
@@ -2117,11 +2142,10 @@
       <button class="size-btn" id="sizeL" onclick="setWindowPresetSize('L')">L</button>
     </div>
 
-    <!-- Window Controls: Sound, Pin, Minimize, Maximize, Close -->
+    <!-- Window Controls: Combat, Sound, Minimize, Maximize, Close -->
     <div class="header-ctrls no-drag">
       <button class="ctrl-btn" id="combatBtn" onclick="toggleCombatHUD()" title="Combat & Turn Tracker HUD">⚔️</button>
       <button class="ctrl-btn" id="soundBtn" onclick="toggleSoundboard()" title="Tabletop Audio Soundboard & Ambience">🔊</button>
-      <button class="ctrl-btn" id="pinBtn" onclick="togglePin()" title="Pin Always on Top">📌</button>
       <button class="ctrl-btn" onclick="minimizeWidget()" title="Minimize">&#9472;</button>
       <button class="ctrl-btn" id="maxBtn" onclick="toggleMaximize()" title="Maximize / Restore">&#9633;</button>
       <button class="ctrl-btn close" onclick="closeWidget()" title="Close Application">&#10005;</button>
@@ -2411,9 +2435,9 @@
 
         <div class="mod-stepper">
           <span class="mod-tag">Mod:</span>
-          <button class="step-btn" onclick="changeMod(-1)">−</button>
-          <span class="mod-num" id="modDisplay">+0</span>
-          <button class="step-btn" onclick="changeMod(1)">+</button>
+          <button class="step-btn" onclick="changeMod(-1, event)" title="Kurangi 1 (Shift+Klik: -5)">−</button>
+          <input type="text" class="mod-num mod-input" id="modDisplay" value="+0" onfocus="this.select()" oninput="onModInput(this.value)" onchange="onModChange(this)" onkeydown="if(event.key==='Enter') this.blur()" title="Ketik angka modifier kustom secara langsung" />
+          <button class="step-btn" onclick="changeMod(1, event)" title="Tambah 1 (Shift+Klik: +5)">+</button>
         </div>
       </div>
 
@@ -3145,8 +3169,7 @@
         updateDieUI(d);
       }
       modifier = 0;
-      const modEl = document.getElementById('modDisplay');
-      if (modEl) modEl.innerText = '+0';
+      updateModDisplay();
       setRollMode('normal', false);
       if (playSound) playClickSound();
     }
@@ -3207,9 +3230,40 @@
     }
 
     // Modifier
-    function changeMod(delta) {
-      modifier += delta;
-      document.getElementById('modDisplay').innerText = (modifier >= 0 ? '+' : '') + modifier;
+    function updateModDisplay() {
+      const el = document.getElementById('modDisplay');
+      if (!el) return;
+      const formatted = (modifier >= 0 ? '+' : '') + modifier;
+      if (el.tagName === 'INPUT') {
+        el.value = formatted;
+      } else {
+        el.innerText = formatted;
+      }
+    }
+
+    function onModInput(rawVal) {
+      const clean = rawVal.replace(/[^\d+-]/g, '');
+      if (clean === '' || clean === '+' || clean === '-') {
+        modifier = 0;
+        return;
+      }
+      const parsed = parseInt(clean);
+      if (!isNaN(parsed)) {
+        modifier = parsed;
+      }
+    }
+
+    function onModChange(inputEl) {
+      const clean = inputEl.value.replace(/[^\d+-]/g, '');
+      const parsed = parseInt(clean);
+      modifier = isNaN(parsed) ? 0 : parsed;
+      updateModDisplay();
+    }
+
+    function changeMod(delta, ev) {
+      const step = (ev && ev.shiftKey) ? delta * 5 : delta;
+      modifier += step;
+      updateModDisplay();
       playClickSound();
     }
 
@@ -4246,8 +4300,7 @@
         updateDieUI(d);
       }
       modifier = mod || 0;
-      const modEl = document.getElementById('modDisplay');
-      if (modEl) modEl.innerText = (modifier >= 0 ? '+' : '') + modifier;
+      updateModDisplay();
       rollMode = mode;
       const btnNorm = document.getElementById('btnNorm');
       const btnAdv = document.getElementById('btnAdv');
@@ -4297,7 +4350,7 @@
         updateDieUI(d);
       }
       modifier = mod;
-      document.getElementById('modDisplay').innerText = (mod >= 0 ? '+' : '') + mod;
+      updateModDisplay();
       switchTab('dice');
       rollDice();
 
@@ -4374,14 +4427,7 @@
       }
     }
 
-    // Window Controls: Pin, Minimize, Maximize, Close
-    function togglePin() {
-      isPinned = !isPinned;
-      document.getElementById('pinBtn').classList.toggle('active-pin', isPinned);
-      if (window.pywebview && window.pywebview.api) {
-        window.pywebview.api.set_on_top(isPinned);
-      }
-    }
+    // Window Controls: Minimize, Maximize, Close
 
     function minimizeWidget() {
       if (window.pywebview && window.pywebview.api) {
