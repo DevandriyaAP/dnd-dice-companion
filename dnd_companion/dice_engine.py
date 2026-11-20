@@ -59,7 +59,7 @@ class RollResult:
     @staticmethod
     def from_dict(d):
         res = RollResult(
-            character_name=d.get("character_name", "Malexius"),
+            character_name=d.get("character_name", "Hero"),
             dice_counts=d.get("dice_counts", {}),
             modifier=d.get("modifier", 0),
             rolls_detail=d.get("rolls_detail", []),
@@ -75,7 +75,7 @@ class RollResult:
 class DiceEngine:
     def __init__(self, data_file="dnd_dice_data.json"):
         self.data_file = data_file
-        self.character_name = "Malexius, The One Who Defied Fate"
+        self.character_name = "D&D Beyond Adventurer"
         self.history = []
         self.load_data()
 

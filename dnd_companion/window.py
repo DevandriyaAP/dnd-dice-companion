@@ -738,7 +738,7 @@ class FloatingDndWidget(QMainWindow):
         self.btn_mode_dis.setStyleSheet(active_style if self.roll_mode == "disadvantage" else base_style)
 
     def on_character_name_changed(self, text):
-        self.engine.character_name = text.strip() or "Malexius"
+        self.engine.character_name = text.strip() or "Hero"
         self.lbl_char_tag.setText(self.engine.character_name)
         self.engine.save_data()
 

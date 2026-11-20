@@ -10,7 +10,7 @@ Floating desktop companion widget for D&D 5e tabletop gaming, inspired by Nuppi 
 - **Combo & Macro Vault**: Pre-configured signature attack combos plus a custom macro builder with one-click rolling.
 - **Procedural Tabletop Audio & Ambience**: Synthesized sound effects (dice rattle, crit boom, fumble shatter, blade clash, spell chime) plus procedural background ambiences (Tavern Hearth, Dungeon Rain, Astral Drone).
 - **Interactive Character Sheet & Sheet Importer**:
-  - Built-in legendary sheet for **Malexius, The One Who Defied Fate** (Level 20 Rogue/Fighter/Wizard).
+  - Built-in customizable character sheet template for quick play.
   - **Dynamic Sheet Importer**: Import your own character sheets via `.pdf`, `.txt`, or `.md` files or direct paste.
   - Automatic extraction of D&D 5e stats, saving throws, weapons, actions, and skills powered by Google Gemini AI.
   - Interactive 1-click rolls for attacks, damage, ability checks, and saving throws directly from your sheet.

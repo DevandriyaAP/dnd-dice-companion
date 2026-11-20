@@ -127,7 +127,9 @@
       border-color: rgba(16, 185, 129, 0.4);
       color: #34d399;
     }
-    .pill-btn.active-malexius {
+    .pill-btn.active-char,
+    .pill-btn.active-sheet,
+    .pill-btn {
       background: rgba(220, 38, 38, 0.2);
       border-color: rgba(239, 68, 68, 0.5);
       color: #f87171;
@@ -236,10 +238,12 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 10px 12px;
+      padding: 10px 14px;
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: 10px;
+      width: 100%;
     }
     /* Modern Dark Minimalist Scrollbars */
     * {
@@ -292,7 +296,9 @@
       display: none;
       flex-direction: column;
       gap: 10px;
-      height: 100%;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
     }
     .tab-page.active {
       display: flex;
@@ -612,6 +618,9 @@
     /* Individual Die Tile */
     .die-slot {
       height: 66px;
+      max-width: 120px;
+      width: 100%;
+      margin: 0 auto;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--card-border);
       border-radius: 12px;
@@ -841,6 +850,59 @@
     }
     .clear-link:hover {
       text-decoration: underline;
+    }
+
+    /* Quick History Feed on Dice Page */
+    .dice-recent-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      margin-top: 2px;
+    }
+    .dice-recent-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .dice-recent-link {
+      font-size: 9.5px;
+      color: var(--gold);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .dice-recent-link:hover {
+      text-decoration: underline;
+    }
+    .dice-recent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .dice-recent-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 5px 8px;
+      font-size: 10.5px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .dice-recent-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
     /* History Tab */
@@ -1139,6 +1201,10 @@
       gap: 7px;
       animation: slideDown 0.2s ease-out;
       z-index: 10;
+      max-width: 520px;
+      width: 100%;
+      margin: 0 auto;
+      border-radius: 0 0 10px 10px;
     }
     @keyframes slideDown {
       from { opacity: 0; transform: translateY(-8px); }
@@ -1338,6 +1404,10 @@
       gap: 8px;
       animation: slideDown 0.2s ease-out;
       z-index: 10;
+      max-width: 520px;
+      width: 100%;
+      margin: 0 auto;
+      border-radius: 0 0 10px 10px;
     }
     .sb-sec-title {
       font-size: 10px;
@@ -1606,7 +1676,7 @@
       animation: spin 0.8s linear infinite;
     }
 
-    /* MALEXIUS CHARACTER SHEET TAB */
+    /* CHARACTER SHEET TAB */
     .mal-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -2032,8 +2102,8 @@
       <button class="pill-btn" id="tabPreset" onclick="switchTab('presets')" title="Attack & Ability Presets">
         <span>⚔️</span> <span class="tab-label">Presets</span>
       </button>
-      <button class="pill-btn" id="tabMalexius" onclick="switchTab('malexius')" title="Sheet Karakter D&D 5e">
-        <span id="tabCharIcon">🩸</span> <span class="tab-label" id="tabCharLabel">Malexius</span>
+      <button class="pill-btn" id="tabSheet" onclick="switchTab('sheet')" title="Sheet Karakter D&D 5e">
+        <span id="tabCharIcon">📜</span> <span class="tab-label" id="tabCharLabel">Sheet</span>
       </button>
       <button class="pill-btn" id="tabAI" onclick="switchTab('ai')" title="D&D Companion AI & Rules Oracle">
         <span>🔮</span> <span class="tab-label">AI</span>
@@ -2076,13 +2146,13 @@
     <div class="active-turn-box">
       <div class="turn-info">
         <span style="font-size: 10px; color: var(--gold); text-transform: uppercase;">Giliran:</span>
-        <span id="activeCombatantName" style="font-size: 13px; font-weight: 900; color: #ffffff;">Malexius</span>
-        <span id="activeCombatantAC" class="ac-badge">🛡️ AC 23</span>
+        <span id="activeCombatantName" style="font-size: 13px; font-weight: 900; color: #ffffff;">Adventurer</span>
+        <span id="activeCombatantAC" class="ac-badge">🛡️ AC 16</span>
       </div>
       <div class="hp-stepper-wrap">
         <div class="hp-display">
           <span>HP:</span>
-          <span id="activeCombatantHP" style="font-weight: 800; color: #4ade80;">193</span>/<span id="activeCombatantMaxHP">193</span>
+          <span id="activeCombatantHP" style="font-weight: 800; color: #4ade80;">44</span>/<span id="activeCombatantMaxHP">44</span>
         </div>
         <div class="hp-buttons">
           <button class="hp-btn neg" onclick="adjustActiveHP(-10)">-10</button>
@@ -2173,7 +2243,7 @@
       <!-- Character Banner -->
       <div class="char-line">
         <div class="char-name" onclick="renameChar()" title="Click to rename character">
-          <span id="charDisplayName">MALEXIUS, THE ONE WHO DEFIED FATE</span>
+          <span id="charDisplayName">D&D 5E ADVENTURER</span>
           <span style="font-size: 9px; opacity: 0.6;">✎</span>
         </div>
         <div class="roll-time" id="rollTime">Ready</div>
@@ -2355,6 +2425,17 @@
 
       <div class="clear-link" onclick="clearDice()" title="Clear all rolled dice, formula, and total from display">CLEAR DICE</div>
 
+      <!-- Quick Recent Rolls Feed for Tall/Enlarged Windows -->
+      <div class="dice-recent-card" id="diceRecentCard">
+        <div class="dice-recent-header">
+          <span>📜 Lemparan Terakhir</span>
+          <span class="dice-recent-link" onclick="switchTab('history')">Buka Tab Hist ▶</span>
+        </div>
+        <div id="diceRecentList" class="dice-recent-list">
+          <div style="color:var(--text-dim);font-size:10px;font-style:italic;">Belum ada lemparan baru. Lempar dadu di atas!</div>
+        </div>
+      </div>
+
     </div>
 
     <!-- PAGE 2: HISTORY -->
@@ -2398,76 +2479,90 @@
           </div>
         </div>
 
-        <!-- Signature Malexius Combos -->
+        <!-- Popular D&D 5e Combat Combos -->
         <div style="font-size:10px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">
-          ⚡ Malexius Signature Combos
+          ⚡ Popular D&D 5e Combat Combos
         </div>
-        <div class="macro-item-card" onclick="executeAIRoll('2d12 + 2d8 + 6d10 + 12')">
+        <div class="macro-item-card" onclick="executeAIRoll('1d8 + 3d6 + 4')">
           <div>
             <div style="display:flex;align-items:center;gap:6px;">
               <span class="macro-tag dmg">Damage</span>
-              <span style="font-size:11px;font-weight:700;color:var(--text);">💥 Vesper Overcharged Burst</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">🗡️ Sneak Attack (Rapier + 3d6)</span>
             </div>
-            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">1 Charge Reaktor: Base + Force Bypass Resistance</div>
+            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">Finesse Rapier 1d8 + 3d6 Sneak + DEX Mod (+4)</div>
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:10px;font-weight:800;color:var(--gold);">2d12+2d8+6d10+12</span>
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">1d8+3d6+4</span>
             <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
           </div>
         </div>
 
-        <div class="macro-item-card" onclick="executeAIRoll('10d10 + 9d6')">
+        <div class="macro-item-card" onclick="executeAIRoll('2d6 + 3d8 + 4')">
           <div>
             <div style="display:flex;align-items:center;gap:6px;">
               <span class="macro-tag dmg">Damage</span>
-              <span style="font-size:11px;font-weight:700;color:var(--text);">🩸 Reaper Tithe + Sneak Attack</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">✨ Divine Smite (Greatsword + Lv 2)</span>
             </div>
-            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">2 Charges Soul Fuel + Rogue 17 Sneak Attack</div>
+            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">Greatsword 2d6 + Paladin Smite 3d8 + STR (+4)</div>
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:10px;font-weight:800;color:var(--gold);">10d10+9d6</span>
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">2d6+3d8+4</span>
             <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
           </div>
         </div>
 
-        <div class="macro-item-card" onclick="executeAIRoll('8d10 + 12d8 + 48')">
-          <div>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <span class="macro-tag atk">Slayer</span>
-              <span style="font-size:11px;font-weight:700;color:var(--text);">👹 4x Slayer Claws Full Burst</span>
-            </div>
-            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">Multiattack 4x Cakar Slayer Wujud Monster</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:10px;font-weight:800;color:var(--gold);">8d10+12d8+48</span>
-            <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
-          </div>
-        </div>
-
-        <div class="macro-item-card" onclick="executeAIRoll('3d10')">
-          <div>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <span class="macro-tag spell">Reaction</span>
-              <span style="font-size:11px;font-weight:700;color:var(--text);">🛡️ Aegis Shield Slam</span>
-            </div>
-            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">DC 24 STR Save: 3d10 Force + Prone 10 ft</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:10px;font-weight:800;color:var(--gold);">3d10</span>
-            <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
-          </div>
-        </div>
-
-        <div class="macro-item-card" onclick="executeAIRoll('10d6')">
+        <div class="macro-item-card" onclick="executeAIRoll('8d6')">
           <div>
             <div style="display:flex;align-items:center;gap:6px;">
               <span class="macro-tag spell">Spell</span>
-              <span style="font-size:11px;font-weight:700;color:var(--text);">🔥 Fireball (Slot Level 5)</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">🔥 Fireball (8d6 Fire)</span>
             </div>
-            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">Area of Effect Fire Damage DC 21 DEX</div>
+            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">Classic 3rd Level Area Fire Blast (DC 15 DEX)</div>
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:10px;font-weight:800;color:var(--gold);">10d6</span>
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">8d6</span>
+            <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
+          </div>
+        </div>
+
+        <div class="macro-item-card" onclick="executeAIRoll('2d10 + 8')">
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="macro-tag spell">Spell</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">🔮 Eldritch Blast (2 Beams)</span>
+            </div>
+            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">Level 5 Cantrip with Agonizing Blast (2x 1d10+4)</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">2d10+8</span>
+            <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
+          </div>
+        </div>
+
+        <div class="macro-item-card" onclick="executeAIRoll('2d8 + 8')">
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="macro-tag atk">Attack</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">⚔️ Action Surge Multiattack</span>
+            </div>
+            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">Two 1-Handed Weapon Strikes (2d8 + 8)</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">2d8+8</span>
+            <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
+          </div>
+        </div>
+
+        <div class="macro-item-card" onclick="executeAIRoll('1d8 + 4')">
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="macro-tag heal">Healing</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">✨ Cure Wounds (1d8+4)</span>
+            </div>
+            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">1st-Level Divine Restoration Touch</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">1d8+4</span>
             <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
           </div>
         </div>
@@ -2480,15 +2575,15 @@
       </div>
     </div>
 
-    <!-- PAGE 4: CHARACTER SHEET -->
-    <div class="tab-page" id="pageMalexius">
+        <!-- PAGE 4: CHARACTER SHEET -->
+    <div class="tab-page" id="pageSheet">
 
       <!-- Character Switcher & Import Header -->
       <div class="char-manager-bar">
         <div class="char-selector-wrap">
           <span style="font-size: 13px;">🎭</span>
           <select id="charSelector" class="char-dropdown" onchange="onSelectCharacter(this.value)">
-            <option value="malexius">🩸 Malexius, The One Who Defied Fate (Lv 20)</option>
+            <option value="default_hero">⚔️ Valen, The Shadow Strider (Lv 5)</option>
           </select>
         </div>
         <div class="char-actions-wrap">
@@ -2501,330 +2596,251 @@
         </div>
       </div>
 
-      <!-- Built-in Malexius View -->
-      <div id="malexiusBuiltinView" style="display: flex; flex-direction: column; gap: 8px;">
+      <!-- Built-in Default Adventurer View -->
+      <div id="defaultHeroBuiltinView" style="display: flex; flex-direction: column; gap: 8px;">
 
         <!-- Character Card -->
         <div class="mal-card">
           <div class="mal-header">
             <div class="mal-name-hero">
-              <span>🩸</span> MALEXIUS, THE ONE WHO DEFIED FATE
+              <span>⚔️</span> VALEN, THE SHADOW STRIDER
             </div>
-          <div class="mal-sub-hero">
-            Level 20 Multiclass • Rogue 17 (Thief) / Fighter 2 / Wizard 1<br/>
-            Drow Elf • Chaotic Evil • Warisan Bhaalspawn (Chosen of Bhaal)
-          </div>
-          <div class="mal-badges-row">
-            <span class="mal-badge gold">PB +7</span>
-            <span class="mal-badge">Bhaal DC 25</span>
-            <span class="mal-badge cyan">Spell DC 20</span>
-            <span class="mal-badge purple">Inspiration 1/1</span>
-            <span class="mal-badge gold">Reliable Talent (Min 10)</span>
-          </div>
-        </div>
-
-        <!-- Vitals Grid -->
-        <div class="mal-vitals-grid">
-          <div class="mal-vital-box" title="Max HP 177 / Current HP 177">
-            <span class="mal-vital-label">HP</span>
-            <span class="mal-vital-val hp">177/177</span>
-          </div>
-          <div class="mal-vital-box" title="Temporary HP (Max 30, Regen 1d6/turn)">
-            <span class="mal-vital-label">Temp HP</span>
-            <span class="mal-vital-val thp">+30</span>
-          </div>
-          <div class="mal-vital-box" title="Mode Aegis Shield: AC 36 / Mode 2H Vesper's: AC 31">
-            <span class="mal-vital-label">AC</span>
-            <span class="mal-vital-val ac">36 / 31</span>
-          </div>
-          <div class="mal-vital-box" style="cursor:pointer;" onclick="rollMalexiusAction('Initiative Check', {d20: 1}, 16)" title="Klik untuk Roll Initiative (DEX +9 + PB +7 Alert)">
-            <span class="mal-vital-label">Init ⚡</span>
-            <span class="mal-vital-val init">+16</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Ability Scores & Saves -->
-      <div class="mal-card">
-        <div class="mal-section-title">📊 Ability Scores & Saving Throws (Click to Roll)</div>
-        <div class="mal-stats-grid">
-          <!-- STR -->
-          <div class="mal-stat-col">
-            <span class="mal-stat-name">STR</span>
-            <span class="mal-stat-mod">+5</span>
-            <span class="mal-stat-score">20</span>
-            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('STR Check', {d20: 1}, 5)" title="STR Check (+5)">+5</button>
-            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('STR Save', {d20: 1}, 6)" title="STR Save (+6)">Sv +6</button>
-          </div>
-          <!-- DEX -->
-          <div class="mal-stat-col" style="border-color: rgba(239, 68, 68, 0.4);">
-            <span class="mal-stat-name" style="color:#ef4444;">DEX</span>
-            <span class="mal-stat-mod" style="color:#f87171;">+9</span>
-            <span class="mal-stat-score">28</span>
-            <button class="mal-stat-roll-btn prof" onclick="rollMalexiusAction('DEX Check', {d20: 1}, 9)" title="DEX Check (+9)">+9</button>
-            <button class="mal-stat-roll-btn prof" onclick="rollMalexiusAction('DEX Save [Adv]', {d20: 1}, 17, 'adv')" title="DEX Save Proficient +17 [Advantage, Evasion]">Sv +17*</button>
-          </div>
-          <!-- CON -->
-          <div class="mal-stat-col">
-            <span class="mal-stat-name">CON</span>
-            <span class="mal-stat-mod">+5</span>
-            <span class="mal-stat-score">20</span>
-            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('CON Check', {d20: 1}, 5)" title="CON Check (+5)">+5</button>
-            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('CON Save', {d20: 1}, 6)" title="CON Save (+6)">Sv +6</button>
-          </div>
-          <!-- INT -->
-          <div class="mal-stat-col">
-            <span class="mal-stat-name">INT</span>
-            <span class="mal-stat-mod">+5</span>
-            <span class="mal-stat-score">20</span>
-            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('INT Check', {d20: 1}, 5)" title="INT Check (+5)">+5</button>
-            <button class="mal-stat-roll-btn prof" onclick="rollMalexiusAction('INT Save', {d20: 1}, 13)" title="INT Save Proficient (+13)">Sv +13*</button>
-          </div>
-          <!-- WIS -->
-          <div class="mal-stat-col">
-            <span class="mal-stat-name">WIS</span>
-            <span class="mal-stat-mod">+5</span>
-            <span class="mal-stat-score">20</span>
-            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('WIS Check', {d20: 1}, 5)" title="WIS Check (+5)">+5</button>
-            <button class="mal-stat-roll-btn prof" onclick="rollMalexiusAction('WIS Save', {d20: 1}, 13)" title="WIS Save Proficient Slippery Mind (+13)">Sv +13*</button>
-          </div>
-          <!-- CHA -->
-          <div class="mal-stat-col">
-            <span class="mal-stat-name">CHA</span>
-            <span class="mal-stat-mod">+6</span>
-            <span class="mal-stat-score">23</span>
-            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('CHA Check', {d20: 1}, 6)" title="CHA Check (+6)">+6</button>
-            <button class="mal-stat-roll-btn prof" onclick="rollMalexiusAction('CHA Save [Adv]', {d20: 1}, 14, 'adv')" title="CHA Save Proficient Slippery Mind (+14) [Adv vs Charmed]">Sv +14*</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Attacks & Weapons -->
-      <div class="mal-card">
-        <div class="mal-section-title">⚔️ Combat Attacks & Arsenal (One-Click Roll)</div>
-
-        <!-- Vesper's Laras Utama -->
-        <div class="mal-atk-card">
-          <div class="mal-atk-top">
-            <span class="mal-atk-name">🔭 Vesper's Last Horizon (Laras Utama)</span>
-            <span class="mal-atk-meta">Range 300/1200 ft • Mechanus Core</span>
-          </div>
-          <div style="font-size: 9.5px; color: var(--text-muted);">
-            Hit: <b style="color:#ef4444;">+19</b> | Base Dmg: <b>2d12+12</b> Piercing + <b>2d8</b> Radiant Laser
-          </div>
-          <div class="mal-atk-btns">
-            <button class="mal-act-btn atk" onclick="rollMalexiusAction('Vesper Attack', {d20: 1}, 19)">🎯 Serang (+19)</button>
-            <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Vesper Base Dmg', {d12: 2, d8: 2}, 12)">💥 Base (2d12+2d8+12)</button>
-            <button class="mal-act-btn special" onclick="rollMalexiusAction('Vesper Overcharged Rail-Shot', {d12: 2, d8: 2, d10: 6}, 12)" title="1 Charge Reaktor: +6d10 Force bypass Resistance/Immunity, STR DC 21 or Prone">⚡ Rail-Shot (+6d10 Force)</button>
-            <button class="mal-act-btn special" onclick="rollMalexiusAction('Vesper Null-Bane Slug', {d12: 2, d8: 5}, 12)" title="Peluru Khusus: +3d8 Psychic, Disadv Conc Save, segel planar">🟣 Null-Bane (+3d8 Psy)</button>
-          </div>
-        </div>
-
-        <!-- Vesper's Laser Bayonet -->
-        <div class="mal-atk-card">
-          <div class="mal-atk-top">
-            <span class="mal-atk-name">🗡️ Vesper's Laser-Bayonet (Adamantine Melee)</span>
-            <span class="mal-atk-meta">Reach 5 ft • Finesse • Vex</span>
-          </div>
-          <div style="font-size: 9.5px; color: var(--text-muted);">
-            Hit: <b style="color:#ef4444;">+19</b> | Dmg: <b>1d8+12</b> Slashing + <b>2d8</b> Radiant Laser
-          </div>
-          <div class="mal-atk-btns">
-            <button class="mal-act-btn atk" onclick="rollMalexiusAction('Bayonet Attack', {d20: 1}, 19)">⚔️ Serang (+19)</button>
-            <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Bayonet Base Dmg', {d8: 3}, 12)">💥 Base (1d8+2d8+12)</button>
-            <button class="mal-act-btn special" onclick="rollMalexiusAction('Bayonet + Sneak + Infernal', {d8: 3, d6: 12}, 12)" title="Bayonet + Sneak Attack 9d6 + Infernal Slaughter 3d6">🩸 Full Strike (+9d6+3d6)</button>
-            <button class="mal-act-btn special" onclick="rollMalexiusAction('Booming Blade Bayonet', {d8: 6}, 12)" title="Booming Blade: +3d8 Thunder saat hit (+4d8 jika musuh bergerak)">⚡ Booming (+3d8)</button>
-          </div>
-        </div>
-
-        <!-- Vesper's Breacher -->
-        <div class="mal-atk-card">
-          <div class="mal-atk-top">
-            <span class="mal-atk-name">🌌 Grav-Photon Breacher (Underbarrel)</span>
-            <span class="mal-atk-meta">30 ft Cone • Bonus Action</span>
-          </div>
-          <div style="font-size: 9.5px; color: var(--text-muted);">
-            Area Cone 30 ft | DC 21 STR Save or <b>6d8 Force+Radiant</b> + terdorong 15 ft + Prone!
-          </div>
-          <div class="mal-atk-btns">
-            <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Grav-Photon Breacher', {d8: 6}, 0)">🌌 Breacher Blast (6d8)</button>
-          </div>
-        </div>
-
-        <!-- Silent Tithe -->
-        <div class="mal-atk-card">
-          <div class="mal-atk-top">
-            <span class="mal-atk-name">🗡️ Silent Tithe (Shortsword +3)</span>
-            <span class="mal-atk-meta">Reach 5 ft • Finesse • Light</span>
-          </div>
-          <div style="font-size: 9.5px; color: var(--text-muted);">
-            Hit: <b style="color:#ef4444;">+19</b> | Dmg: <b>1d6+12</b> Piercing + <b>2d8</b> Necrotic (Crit: +6d8 Necrotic!)
-          </div>
-          <div class="mal-atk-btns">
-            <button class="mal-act-btn atk" onclick="rollMalexiusAction('Silent Tithe Attack', {d20: 1}, 19)">🗡️ Serang (+19)</button>
-            <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Silent Tithe Base Dmg', {d6: 1, d8: 2}, 12)">💥 Base (1d6+2d8+12)</button>
-            <button class="mal-act-btn special" onclick="rollMalexiusAction('Silent Tithe + Sneak', {d6: 10, d8: 2}, 12)">💀 Tithe + Sneak (10d6+2d8)</button>
-            <button class="mal-act-btn special" onclick="rollMalexiusAction('Reaper Tithe (+10d10 Necrotic)', {d10: 10}, 0)" title="2 Charges: CON Save DC 25 or +10d10 Necrotic Dmg">☠️ Reaper's Tithe (10d10)</button>
-          </div>
-        </div>
-
-        <!-- Class Powers & Bhaal Blessings -->
-        <div class="mal-atk-card">
-          <div class="mal-atk-top">
-            <span class="mal-atk-name">🩸 Class Powers & Bhaal Gifts</span>
-            <span class="mal-atk-meta">Reliable Sneak & Siphon</span>
-          </div>
-          <div class="mal-atk-btns">
-            <button class="mal-act-btn special" onclick="rollMalexiusAction('Sneak Attack (Rogue 17)', {d6: 9}, 0)" title="Sneak Attack 9d6 (reroll 1s & 2s pada crit)">🩸 Sneak Attack (9d6)</button>
-            <button class="mal-act-btn special" onclick="rollMalexiusAction('Infernal Slaughter (Bhaal)', {d6: 3}, 0)" title="+3d6 Necrotic/Fire, pulihkan HP 1/2 total damage (kelebihan jadi Temp HP)">🔥 Infernal Slaughter (3d6)</button>
-            <button class="mal-act-btn special" onclick="rollMalexiusAction('Amulet of Bhaal: First Blood', {d8: 4}, 0)" title="+4d8 Necrotic ke musuh ber-HP penuh, pendarahan 2d10/turn">💀 First Blood (4d8)</button>
-            <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Aegis Shield Slam', {d10: 3}, 0)" title="DC 24 STR Save: 3d10 Force + Prone + terdorong 10 ft">🛡️ Shield Slam (3d10)</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Skills & Reliable Talent -->
-      <div class="mal-card">
-        <div class="mal-section-title">🎯 Skills & Reliable Talent (Min d20 = 10)</div>
-        <div class="mal-skills-list">
-          <div class="mal-skill-row" onclick="rollMalexiusAction('Sleight of Hand (Reliable min 38)', {d20: 1}, 28)" title="Double PB + DEX + Gloves of Thievery = +28 (Min roll 38)">
-            <span class="mal-skill-name">Sleight of Hand [E]</span>
-            <span class="mal-skill-mod">+28</span>
-          </div>
-          <div class="mal-skill-row" onclick="rollMalexiusAction('Stealth [Adv] (Reliable min 33)', {d20: 1}, 23, 'adv')" title="Double PB + DEX + Boots of Elvenkind [Adv] = +23 (Min roll 33)">
-            <span class="mal-skill-name">Stealth [E, Adv]</span>
-            <span class="mal-skill-mod">+23</span>
-          </div>
-          <div class="mal-skill-row" onclick="rollMalexiusAction('Intimidation [Adv] (Reliable min 30)', {d20: 1}, 20, 'adv')" title="Double PB + CHA + Sovereign Veil [Adv] = +20 (Min roll 30)">
-            <span class="mal-skill-name">Intimidation [E, Adv]</span>
-            <span class="mal-skill-mod">+20</span>
-          </div>
-          <div class="mal-skill-row" onclick="rollMalexiusAction('Investigation (Reliable min 29)', {d20: 1}, 19)" title="Double PB + INT = +19 (Min roll 29)">
-            <span class="mal-skill-name">Investigation [E]</span>
-            <span class="mal-skill-mod">+19</span>
-          </div>
-          <div class="mal-skill-row" onclick="rollMalexiusAction('Perception (Reliable min 29)', {d20: 1}, 19)" title="Double PB + WIS = +19 (Passive 29, Min roll 29)">
-            <span class="mal-skill-name">Perception [E]</span>
-            <span class="mal-skill-mod">+19</span>
-          </div>
-          <div class="mal-skill-row" onclick="rollMalexiusAction('Deception [Adv] (Reliable min 23)', {d20: 1}, 13, 'adv')" title="PB + CHA + Sovereign Veil [Adv] = +13 (Min roll 23)">
-            <span class="mal-skill-name">Deception [*Adv]</span>
-            <span class="mal-skill-mod">+13</span>
-          </div>
-          <div class="mal-skill-row" onclick="rollMalexiusAction('Insight (Reliable min 22)', {d20: 1}, 12)" title="PB + WIS = +12 (Passive 22, Min roll 22)">
-            <span class="mal-skill-name">Insight [*]</span>
-            <span class="mal-skill-mod">+12</span>
-          </div>
-          <div class="mal-skill-row" onclick="rollMalexiusAction('Acrobatics', {d20: 1}, 9)" title="Pure DEX Mod = +9 (Tanpa Reliable Talent)">
-            <span class="mal-skill-name">Acrobatics</span>
-            <span class="mal-skill-mod">+9</span>
-          </div>
-          <div class="mal-skill-row" onclick="rollMalexiusAction('Athletics', {d20: 1}, 5)" title="Pure STR Mod = +5 (Tanpa Reliable Talent)">
-            <span class="mal-skill-name">Athletics</span>
-            <span class="mal-skill-mod">+5</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Resource Trackers -->
-      <div class="mal-card">
-        <div class="mal-section-title">⚡ Interactive Resource Trackers</div>
-        <div class="mal-trackers-grid">
-          <div class="mal-track-box">
-            <span class="mal-track-label">Action Surge</span>
-            <div class="mal-track-ctrl">
-              <span class="mal-track-val" id="trkActionSurge">1/1</span>
-              <button class="mal-track-btn" onclick="toggleTracker('trkActionSurge', 1)">✓</button>
+            <div class="mal-sub-hero">
+              Level 5 Multiclass • Rogue 3 (Thief) / Fighter 2 • Half-Elf • Neutral Good
+            </div>
+            <div class="mal-badges-row">
+              <span class="mal-badge gold">PB +3</span>
+              <span class="mal-badge">AC 16</span>
+              <span class="mal-badge cyan">Speed 30 ft</span>
+              <span class="mal-badge purple">Inspiration 1/1</span>
+              <span class="mal-badge gold">Action Surge 1/1</span>
             </div>
           </div>
-          <div class="mal-track-box">
-            <span class="mal-track-label">Second Wind (1d10+2)</span>
-            <div class="mal-track-ctrl">
-              <span class="mal-track-val" id="trkSecondWind">2/2</span>
-              <button class="mal-track-btn" onclick="stepTracker('trkSecondWind', -1, 0, 2); rollMalexiusAction('Second Wind Healing', {d10: 1}, 2);">🎲</button>
+
+          <!-- Vitals Grid -->
+          <div class="mal-vitals-grid">
+            <div class="mal-vital-box" title="Max HP 44 / Current HP 44">
+              <span class="mal-vital-label">HP</span>
+              <span class="mal-vital-val hp">44/44</span>
             </div>
-          </div>
-          <div class="mal-track-box">
-            <span class="mal-track-label">Spell Slots (Lv 1)</span>
-            <div class="mal-track-ctrl">
-              <span class="mal-track-val" id="trkSpellSlots">1/2</span>
-              <button class="mal-track-btn" onclick="stepTracker('trkSpellSlots', -1, 0, 2)">-</button>
-              <button class="mal-track-btn" onclick="stepTracker('trkSpellSlots', 1, 0, 2)">+</button>
+            <div class="mal-vital-box" title="Temporary HP">
+              <span class="mal-vital-label">Temp HP</span>
+              <span class="mal-vital-val thp">+0</span>
             </div>
-          </div>
-          <div class="mal-track-box">
-            <span class="mal-track-label">Vesper's Reactor</span>
-            <div class="mal-track-ctrl">
-              <span class="mal-track-val" id="trkVesper">4/5</span>
-              <button class="mal-track-btn" onclick="stepTracker('trkVesper', -1, 0, 5)">-</button>
-              <button class="mal-track-btn" onclick="stepTracker('trkVesper', 1, 0, 5)">+</button>
+            <div class="mal-vital-box" title="Studded Leather + DEX: AC 16">
+              <span class="mal-vital-label">AC</span>
+              <span class="mal-vital-val ac">16</span>
             </div>
-          </div>
-          <div class="mal-track-box">
-            <span class="mal-track-label">Silent Tithe</span>
-            <div class="mal-track-ctrl">
-              <span class="mal-track-val" id="trkTithe">3/3</span>
-              <button class="mal-track-btn" onclick="stepTracker('trkTithe', -1, 0, 3)">-</button>
-              <button class="mal-track-btn" onclick="stepTracker('trkTithe', 1, 0, 3)">+</button>
-            </div>
-          </div>
-          <div class="mal-track-box">
-            <span class="mal-track-label">Chronos-Null Singularity</span>
-            <div class="mal-track-ctrl">
-              <span class="mal-track-val" id="trkChronos">3/3</span>
-              <button class="mal-track-btn" onclick="stepTracker('trkChronos', -1, 0, 3)">-</button>
-              <button class="mal-track-btn" onclick="stepTracker('trkChronos', 1, 0, 3)">+</button>
-            </div>
-          </div>
-          <div class="mal-track-box">
-            <span class="mal-track-label">Null-Bane Slugs</span>
-            <div class="mal-track-ctrl">
-              <span class="mal-track-val" id="trkSlugs">2/6</span>
-              <button class="mal-track-btn" onclick="stepTracker('trkSlugs', -1, 0, 6)">-</button>
-              <button class="mal-track-btn" onclick="stepTracker('trkSlugs', 1, 0, 6)">+</button>
-            </div>
-          </div>
-          <div class="mal-track-box">
-            <span class="mal-track-label">Potion of Speed</span>
-            <div class="mal-track-ctrl">
-              <span class="mal-track-val" id="trkSpeed">8/10</span>
-              <button class="mal-track-btn" onclick="stepTracker('trkSpeed', -1, 0, 10)">-</button>
-              <button class="mal-track-btn" onclick="stepTracker('trkSpeed', 1, 0, 10)">+</button>
+            <div class="mal-vital-box" style="cursor:pointer;" onclick="rollCharacterAction('Initiative Check', {d20: 1}, 4)" title="Klik untuk Roll Initiative (DEX +4)">
+              <span class="mal-vital-label">Init ⚡</span>
+              <span class="mal-vital-val init">+4</span>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- The Slayer Form & Epic Boons -->
-      <div class="mal-card" style="border-color: rgba(239, 68, 68, 0.45); background: linear-gradient(180deg, rgba(239,68,68,0.06) 0%, rgba(0,0,0,0.3) 100%);">
-        <div class="mal-section-title" style="color:#ef4444;">
-          <span>👹</span> THE SLAYER FORM (CHOSEN OF BHAAL)
+        <!-- Ability Scores & Saves -->
+        <div class="mal-card">
+          <div class="mal-section-title">📊 Ability Scores & Saving Throws (Click to Roll)</div>
+          <div class="mal-stats-grid">
+            <!-- STR -->
+            <div class="mal-stat-col">
+              <span class="mal-stat-name">STR</span>
+              <span class="mal-stat-mod">+1</span>
+              <span class="mal-stat-score">12</span>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('STR Check', {d20: 1}, 1)" title="STR Check (+1)">+1</button>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('STR Save', {d20: 1}, 1)" title="STR Save (+1)">Sv +1</button>
+            </div>
+            <!-- DEX -->
+            <div class="mal-stat-col" style="border-color: rgba(239, 68, 68, 0.4);">
+              <span class="mal-stat-name" style="color:#ef4444;">DEX</span>
+              <span class="mal-stat-mod" style="color:#f87171;">+4</span>
+              <span class="mal-stat-score">18</span>
+              <button class="mal-stat-roll-btn prof" onclick="rollCharacterAction('DEX Check', {d20: 1}, 4)" title="DEX Check (+4)">+4</button>
+              <button class="mal-stat-roll-btn prof" onclick="rollCharacterAction('DEX Save', {d20: 1}, 7)" title="DEX Save Proficient (+7)">Sv +7*</button>
+            </div>
+            <!-- CON -->
+            <div class="mal-stat-col">
+              <span class="mal-stat-name">CON</span>
+              <span class="mal-stat-mod">+2</span>
+              <span class="mal-stat-score">14</span>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('CON Check', {d20: 1}, 2)" title="CON Check (+2)">+2</button>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('CON Save', {d20: 1}, 2)" title="CON Save (+2)">Sv +2</button>
+            </div>
+            <!-- INT -->
+            <div class="mal-stat-col">
+              <span class="mal-stat-name">INT</span>
+              <span class="mal-stat-mod">+2</span>
+              <span class="mal-stat-score">14</span>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('INT Check', {d20: 1}, 2)" title="INT Check (+2)">+2</button>
+              <button class="mal-stat-roll-btn prof" onclick="rollCharacterAction('INT Save', {d20: 1}, 5)" title="INT Save Proficient (+5)">Sv +5*</button>
+            </div>
+            <!-- WIS -->
+            <div class="mal-stat-col">
+              <span class="mal-stat-name">WIS</span>
+              <span class="mal-stat-mod">+1</span>
+              <span class="mal-stat-score">12</span>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('WIS Check', {d20: 1}, 1)" title="WIS Check (+1)">+1</button>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('WIS Save', {d20: 1}, 1)" title="WIS Save (+1)">Sv +1</button>
+            </div>
+            <!-- CHA -->
+            <div class="mal-stat-col">
+              <span class="mal-stat-name">CHA</span>
+              <span class="mal-stat-mod">+0</span>
+              <span class="mal-stat-score">10</span>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('CHA Check', {d20: 1}, 0)" title="CHA Check (+0)">+0</button>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('CHA Save', {d20: 1}, 0)" title="CHA Save (+0)">Sv +0</button>
+            </div>
+          </div>
         </div>
-        <div style="font-size: 10px; color: var(--text-muted); line-height: 1.4;">
-          Wujud Pembantai Bhaal • 1/Long Rest • <b>+150 Temp HP</b> • Size Large • Speed +20 ft • Truesight 120 ft • Magic Resistance (Adv saves vs spells).
-        </div>
-        <div class="mal-atk-btns">
-          <button class="mal-act-btn atk" onclick="rollMalexiusAction('Slayer Claw Attack', {d20: 1}, 20)">👹 Cakar Slayer (+20 to hit)</button>
-          <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Slayer Claw Damage', {d10: 2, d8: 3}, 12)">💥 Dmg Cakar (2d10+3d8+12)</button>
-          <button class="mal-act-btn special" onclick="rollMalexiusAction('4x Slayer Claws Full Burst', {d10: 8, d8: 12}, 48)">🔥 4x Claws Full Multiattack (8d10+12d8+48)</button>
-        </div>
-      </div>
 
-      <!-- Attunements & Wealth -->
-      <div class="mal-card">
-        <div class="mal-section-title">👑 Attunements (4/4) & Kekayaan</div>
-        <div style="font-size: 10px; color: var(--text-muted); display:flex; flex-direction:column; gap:3px;">
-          <div><b>1. The Sovereign's Veil</b> — Truesight 60 ft, +2 CHA (maks 24), kebal baca pikiran.</div>
-          <div><b>2. The Chronos-Null Singularity</b> — +1 AC, +1 Saves, Regen 1d6 HP/turn, Symbiotic Focus.</div>
-          <div><b>3. Amulet of Bhaal</b> — First Blood (+4d8 Necrotic + 2d10/turn bleed), Segel I unlocked.</div>
-          <div><b>4. Deathstalker Mantle</b> — Kill CR 1+ memberi Greater Invisibility 1 turn, Segel II unlocked.</div>
+        <!-- Attacks & Weapons -->
+        <div class="mal-card">
+          <div class="mal-section-title">⚔️ Combat Attacks & Weapons (One-Click Roll)</div>
+
+          <!-- Rapier -->
+          <div class="mal-atk-card">
+            <div class="mal-atk-top">
+              <span class="mal-atk-name">🗡️ Rapier (Finesse Melee)</span>
+              <span class="mal-atk-meta">Reach 5 ft • Finesse</span>
+            </div>
+            <div style="font-size: 9.5px; color: var(--text-muted);">
+              Hit: <b style="color:var(--gold);">+7</b> | Base Dmg: <b>1d8+4</b> Piercing
+            </div>
+            <div class="mal-atk-btns">
+              <button class="mal-act-btn atk" onclick="rollCharacterAction('Rapier Attack', {d20: 1}, 7)">🎯 Serang (+7)</button>
+              <button class="mal-act-btn dmg" onclick="rollCharacterAction('Rapier Base Dmg', {d8: 1}, 4)">💥 Base (1d8+4)</button>
+              <button class="mal-act-btn special" onclick="rollCharacterAction('Rapier + Sneak Attack', {d8: 1, d6: 2}, 4)" title="Rapier + Sneak Attack 2d6">🩸 Sneak (1d8+2d6+4)</button>
+            </div>
+          </div>
+
+          <!-- Shortbow -->
+          <div class="mal-atk-card">
+            <div class="mal-atk-top">
+              <span class="mal-atk-name">🏹 Shortbow (Ranged)</span>
+              <span class="mal-atk-meta">Range 80/320 ft • Two-Handed</span>
+            </div>
+            <div style="font-size: 9.5px; color: var(--text-muted);">
+              Hit: <b style="color:var(--gold);">+7</b> | Base Dmg: <b>1d6+4</b> Piercing
+            </div>
+            <div class="mal-atk-btns">
+              <button class="mal-act-btn atk" onclick="rollCharacterAction('Shortbow Attack', {d20: 1}, 7)">🎯 Serang (+7)</button>
+              <button class="mal-act-btn dmg" onclick="rollCharacterAction('Shortbow Base Dmg', {d6: 1}, 4)">💥 Base (1d6+4)</button>
+              <button class="mal-act-btn special" onclick="rollCharacterAction('Shortbow + Sneak Attack', {d6: 3}, 4)" title="Shortbow + Sneak Attack 2d6">🩸 Sneak (3d6+4)</button>
+            </div>
+          </div>
+
+          <!-- Dagger -->
+          <div class="mal-atk-card">
+            <div class="mal-atk-top">
+              <span class="mal-atk-name">🗡️ Dagger (Melee / Thrown)</span>
+              <span class="mal-atk-meta">Range 20/60 ft • Light • Finesse</span>
+            </div>
+            <div style="font-size: 9.5px; color: var(--text-muted);">
+              Hit: <b style="color:var(--gold);">+7</b> | Dmg: <b>1d4+4</b> Piercing
+            </div>
+            <div class="mal-atk-btns">
+              <button class="mal-act-btn atk" onclick="rollCharacterAction('Dagger Attack', {d20: 1}, 7)">🗡️ Serang (+7)</button>
+              <button class="mal-act-btn dmg" onclick="rollCharacterAction('Dagger Base Dmg', {d4: 1}, 4)">💥 Base (1d4+4)</button>
+              <button class="mal-act-btn special" onclick="rollCharacterAction('Off-hand Dagger Dmg', {d4: 1}, 0)" title="Bonus Action Off-hand (tanpa modifier)">Off-hand (1d4)</button>
+            </div>
+          </div>
+
+          <!-- Rogue & Fighter Powers -->
+          <div class="mal-atk-card">
+            <div class="mal-atk-top">
+              <span class="mal-atk-name">🩸 Class Powers</span>
+              <span class="mal-atk-meta">Sneak Attack & Second Wind</span>
+            </div>
+            <div class="mal-atk-btns">
+              <button class="mal-act-btn special" onclick="rollCharacterAction('Sneak Attack (Rogue 3)', {d6: 2}, 0)" title="Sneak Attack 2d6">🩸 Sneak Attack (2d6)</button>
+              <button class="mal-act-btn heal" onclick="rollCharacterAction('Second Wind Healing', {d10: 1}, 2); stepTracker('trkSecondWind', -1, 0, 1);" title="Bonus Action heal 1d10+2">✨ Second Wind (1d10+2)</button>
+            </div>
+          </div>
         </div>
-        <div class="mal-info-row">
-          <span>Kekayaan Bersih (Lunas):</span>
-          <span class="mal-info-highlight">💰 570.200 GP (43.200 Tunai + 527.000 Brankas)</span>
+
+        <!-- Skills -->
+        <div class="mal-card">
+          <div class="mal-section-title">🎯 Skills & Proficiencies (Click to Roll)</div>
+          <div class="mal-skills-list">
+            <div class="mal-skill-row" onclick="rollCharacterAction('Stealth Check', {d20: 1}, 10)" title="Expertise: Double PB (+6) + DEX (+4) = +10">
+              <span class="mal-skill-name">Stealth [E]</span>
+              <span class="mal-skill-mod">+10</span>
+            </div>
+            <div class="mal-skill-row" onclick="rollCharacterAction('Sleight of Hand Check', {d20: 1}, 10)" title="Expertise: Double PB (+6) + DEX (+4) = +10">
+              <span class="mal-skill-name">Sleight of Hand [E]</span>
+              <span class="mal-skill-mod">+10</span>
+            </div>
+            <div class="mal-skill-row" onclick="rollCharacterAction('Acrobatics Check', {d20: 1}, 7)" title="Proficient: PB (+3) + DEX (+4) = +7">
+              <span class="mal-skill-name">Acrobatics [*]</span>
+              <span class="mal-skill-mod">+7</span>
+            </div>
+            <div class="mal-skill-row" onclick="rollCharacterAction('Perception Check', {d20: 1}, 4)" title="Proficient: PB (+3) + WIS (+1) = +4 (Passive 14)">
+              <span class="mal-skill-name">Perception [*]</span>
+              <span class="mal-skill-mod">+4</span>
+            </div>
+            <div class="mal-skill-row" onclick="rollCharacterAction('Investigation Check', {d20: 1}, 5)" title="Proficient: PB (+3) + INT (+2) = +5">
+              <span class="mal-skill-name">Investigation [*]</span>
+              <span class="mal-skill-mod">+5</span>
+            </div>
+            <div class="mal-skill-row" onclick="rollCharacterAction('Athletics Check', {d20: 1}, 1)" title="STR Mod = +1">
+              <span class="mal-skill-name">Athletics</span>
+              <span class="mal-skill-mod">+1</span>
+            </div>
+          </div>
         </div>
-      </div>
-      </div><!-- End malexiusBuiltinView -->
+
+        <!-- Resource Trackers -->
+        <div class="mal-card">
+          <div class="mal-section-title">⚡ Interactive Resource Trackers</div>
+          <div class="mal-trackers-grid">
+            <div class="mal-track-box">
+              <span class="mal-track-label">Action Surge</span>
+              <div class="mal-track-ctrl">
+                <span class="mal-track-val" id="trkActionSurge">1/1</span>
+                <button class="mal-track-btn" onclick="toggleTracker('trkActionSurge', 1)">✓</button>
+              </div>
+            </div>
+            <div class="mal-track-box">
+              <span class="mal-track-label">Second Wind (1d10+2)</span>
+              <div class="mal-track-ctrl">
+                <span class="mal-track-val" id="trkSecondWind">1/1</span>
+                <button class="mal-track-btn" onclick="stepTracker('trkSecondWind', -1, 0, 1); rollCharacterAction('Second Wind Healing', {d10: 1}, 2);">🎲</button>
+              </div>
+            </div>
+            <div class="mal-track-box">
+              <span class="mal-track-label">Hit Dice (d8/d10)</span>
+              <div class="mal-track-ctrl">
+                <span class="mal-track-val" id="trkHitDice">5/5</span>
+                <button class="mal-track-btn" onclick="stepTracker('trkHitDice', -1, 0, 5)">-</button>
+                <button class="mal-track-btn" onclick="stepTracker('trkHitDice', 1, 0, 5)">+</button>
+              </div>
+            </div>
+            <div class="mal-track-box">
+              <span class="mal-track-label">Inspiration</span>
+              <div class="mal-track-ctrl">
+                <span class="mal-track-val" id="trkInspiration">1/1</span>
+                <button class="mal-track-btn" onclick="toggleTracker('trkInspiration', 1)">✓</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features & Equipment -->
+        <div class="mal-card">
+          <div class="mal-section-title">✨ Features, Traits & Gear</div>
+          <div style="font-size: 10px; color: var(--text-muted); display:flex; flex-direction:column; gap:3px;">
+            <div>• <b>Sneak Attack (+2d6)</b>: Tambah 2d6 damage jika menyerang dengan advantage atau kawan berada dalam 5 ft.</div>
+            <div>• <b>Cunning Action</b>: Bisa menggunakan Bonus Action untuk Dash, Disengage, atau Hide.</div>
+            <div>• <b>Fast Hands & Second-Story Work</b>: Menggunakan objek atau thieves' tools sebagai bonus action; memanjat lebih cepat.</div>
+            <div>• <b>Fighting Style (Archery)</b>: +2 bonus lemparan serangan jarak jauh.</div>
+            <div>• <b>Action Surge (1/Short Rest)</b>: Ambil 1 aksi tambahan pada giliranmu.</div>
+          </div>
+          <div class="mal-info-row">
+            <span>Kekayaan Bersih:</span>
+            <span class="mal-info-highlight">💰 125 GP • Thieves' Tools • Dungeoneer's Pack</span>
+          </div>
+        </div>
+      </div><!-- End defaultHeroBuiltinView -->
 
       <!-- Dynamic Custom Character View -->
       <div id="customCharView" style="display: none; flex-direction: column; gap: 8px;"></div>
@@ -2837,7 +2853,7 @@
         <div class="ai-header">
           <div class="ai-title">
             <span>🔮</span>
-            <span>Malexius Companion AI</span>
+            <span>D&D Companion AI & Rules Oracle</span>
           </div>
           <div style="display: flex; align-items: center; gap: 6px;">
             <div class="ai-status-badge">
@@ -2851,14 +2867,14 @@
         <div class="ai-chips-wrap">
           <div class="ai-chip" onclick="askAINarration()">⚔️ Narasi Serangan Terakhir</div>
           <div class="ai-chip" onclick="setAIPrompt('Jelaskan aturan Grapple & Shove di D&D 5e secara ringkas.')">📖 Aturan Grappling 5e</div>
-          <div class="ai-chip" onclick="setAIPrompt('Bagaimana strategi memaksimalkan Sneak Attack, Action Surge, dan Vesper dalam 1 ronde?')">🩸 Taktik Malexius</div>
-          <div class="ai-chip" onclick="setAIPrompt('Beri 3 ide magic item langka yang cocok sebagai reward bos berikutnya.')">💎 Ide Hadiah/Loot</div>
+          <div class="ai-chip" onclick="setAIPrompt('Bagaimana strategi memaksimalkan Sneak Attack, Cunning Action, dan Action Surge dalam 1 ronde?')">🩸 Taktik Combat</div>
+          <div class="ai-chip" onclick="setAIPrompt('Beri 3 ide magic item uncommon yang cocok sebagai reward petualang level 5.')">💎 Ide Hadiah/Loot</div>
         </div>
 
         <!-- Chat History Box -->
         <div class="ai-chat-box" id="aiChatBox">
           <div class="ai-msg bot">
-            Halo <b>Malexius</b>! Aku siap mendampingi petualanganmu. Kamu bisa minta aku mendeskripsikan seranganmu secara dramatis, tanya aturan D&D 5e, atau minta saran taktik pertarungan!
+            Halo <b>Petualang</b>! Aku siap mendampingi petualangan D&D 5e kamu. Kamu bisa minta aku mendeskripsikan seranganmu secara dramatis, tanya aturan D&D 5e (PHB/DMG), atau minta saran taktik pertarungan!
           </div>
         </div>
 
@@ -2871,8 +2887,6 @@
         </div>
       </div>
     </div>
-
-  </div>
 
   <!-- IMPORT CHARACTER SHEET MODAL -->
   <div class="sheet-modal-backdrop" id="sheetImportModal">
@@ -2943,7 +2957,7 @@
     const diceCounts = { d20: 0, d12: 0, d100: 0, d10: 0, d8: 0, d6: 0, d4: 0 };
     let rollMode = 'normal';
     let modifier = 0;
-    let characterName = localStorage.getItem('dnd_char') || 'Malexius, The One Who Defied Fate';
+    let characterName = (localStorage.getItem('dnd_char') && true) ? localStorage.getItem('dnd_char') : 'Valen, The Shadow Strider';
     let currentTheme = localStorage.getItem('dnd_theme') || 'icewind';
     let soundEnabled = localStorage.getItem('dnd_sound') !== 'false';
     let isPinned = false;
@@ -3355,6 +3369,7 @@
       if (history.length > 50) history.pop();
       localStorage.setItem('dnd_hist', JSON.stringify(history));
       renderHistory();
+      renderRecentRolls();
     }
 
     // Reroll single die clicked by user
@@ -3498,7 +3513,7 @@
     // Tabs
     function switchTab(tab) {
       document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active-dice', 'active-hist', 'active-preset', 'active-malexius', 'active-ai'));
+      document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active-dice', 'active-hist', 'active-preset', 'active-ai'));
 
       if (tab === 'dice') {
         document.getElementById('pageDice').classList.add('active');
@@ -3510,9 +3525,11 @@
       } else if (tab === 'presets') {
         document.getElementById('pagePresets').classList.add('active');
         document.getElementById('tabPreset').classList.add('active-preset');
-      } else if (tab === 'malexius') {
-        document.getElementById('pageMalexius').classList.add('active');
-        document.getElementById('tabMalexius').classList.add('active-malexius');
+      } else if (tab === 'sheet' ) {
+        const pageEl = document.getElementById('pageSheet') ;
+        const tabEl = document.getElementById('tabSheet') ;
+        if (pageEl) pageEl.classList.add('active');
+        if (tabEl) tabEl.classList.add('active-sheet');
       } else if (tab === 'ai') {
         document.getElementById('pageAI').classList.add('active');
         document.getElementById('tabAI').classList.add('active-ai');
@@ -3536,13 +3553,13 @@
 
     function askAINarration() {
       if (!currentRoll.results || currentRoll.results.length === 0) {
-        appendAIMessage('bot', 'Belum ada lemparan dadu! Lempar dadu terlebih dahulu di tab **Dice** atau tab **Malexius**, lalu klik tombol ini lagi.');
+        appendAIMessage('bot', 'Belum ada lemparan dadu! Lempar dadu terlebih dahulu di tab **Dice** atau tab **Sheet**, lalu klik tombol ini lagi.');
         return;
       }
       const activeVals = currentRoll.results.filter(r => !r.dropped).map(r => r.val);
       const grandTotal = activeVals.reduce((a, b) => a + b, 0) + currentRoll.modifier;
       const rollFormula = currentRoll.formulaStr || `${activeVals.length} dadu`;
-      const prompt = `Deskripsikan secara sinematik dan seru aksi/serangan Malexius yang baru saja menghasilkan lemparan ${rollFormula} dengan Total: ${grandTotal}!`;
+      const prompt = `Deskripsikan secara sinematik dan seru aksi/serangan petualang yang baru saja menghasilkan lemparan ${rollFormula} dengan Total: ${grandTotal}!`;
       sendMessageWithPrompt(prompt);
     }
 
@@ -3551,7 +3568,7 @@
       if (box) {
         box.innerHTML = `
           <div class="ai-msg bot">
-            Riwayat chat dibersihkan. Halo <b>Malexius</b>, ada yang bisa aku bantu?
+            Riwayat chat dibersihkan. Halo <b>Petualang</b>, ada yang bisa aku bantu?
           </div>
         `;
       }
@@ -3623,7 +3640,7 @@
       if (typing) typing.style.display = 'block';
 
       const activeChar = typeof getActiveCharacter === 'function' ? getActiveCharacter() : null;
-      let context = activeChar ? `Karakter: ${activeChar.name} (${activeChar.subtitle || ''}). HP: ${activeChar.hp}/${activeChar.maxHp || activeChar.hp}, AC: ${activeChar.ac}, Init: +${activeChar.initMod}.` : `Karakter: Malexius.`;
+      let context = activeChar ? `Karakter: ${activeChar.name} (${activeChar.subtitle || ''}). HP: ${activeChar.hp}/${activeChar.maxHp || activeChar.hp}, AC: ${activeChar.ac}, Init: +${activeChar.initMod}.` : `Karakter: D&D Adventurer.`;
       if (currentRoll && currentRoll.results && currentRoll.results.length > 0) {
         const activeVals = currentRoll.results.filter(r => !r.dropped).map(r => r.val);
         const grandTotal = activeVals.reduce((a, b) => a + b, 0) + currentRoll.modifier;
@@ -3652,7 +3669,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   contents: [{
-                    parts: [{ text: `System: D&D 5e assistant untuk Malexius.\nKonteks: ${context}\nUser: ${prompt}` }]
+                    parts: [{ text: `System: D&D 5e companion assistant.\nKonteks: ${context}\nUser: ${prompt}` }]
                   }],
                   generationConfig: { temperature: 0.7, maxOutputTokens: 600 }
                 })
@@ -3680,18 +3697,18 @@
     // ==========================================
     // CHARACTER SHEET MANAGER & DYNAMIC IMPORTER
     // ==========================================
-    const MALEXIUS_CHAR = {
-      id: 'malexius',
-      name: 'MALEXIUS, THE ONE WHO DEFIED FATE',
-      shortName: 'Malexius',
-      subtitle: 'Level 20 Multiclass • Rogue 17 (Thief) / Fighter 2 / Wizard 1',
-      hp: 177,
-      maxHp: 177,
-      tempHp: 30,
-      ac: '36 / 31',
-      initMod: 16
+    const DEFAULT_CHAR = {
+      id: 'default_hero',
+      name: 'VALEN, THE SHADOW STRIDER',
+      shortName: 'Valen',
+      subtitle: 'Level 5 Multiclass • Rogue 3 (Thief) / Fighter 2 • Half-Elf',
+      hp: 44,
+      maxHp: 44,
+      tempHp: 0,
+      ac: '16',
+      initMod: 4
     };
-
+    
     function getCustomCharacters() {
       try {
         return JSON.parse(localStorage.getItem('dnd_custom_characters') || '[]');
@@ -3705,7 +3722,11 @@
     }
 
     function getActiveCharId() {
-      return localStorage.getItem('dnd_active_char_id') || 'malexius';
+      let id = localStorage.getItem('dnd_active_char_id');
+      if (!id || id === 'default_hero') {
+        id = 'default_hero';
+      }
+      return id;
     }
 
     function setActiveCharId(id) {
@@ -3715,10 +3736,10 @@
 
     function getActiveCharacter() {
       const activeId = getActiveCharId();
-      if (activeId === 'malexius') return MALEXIUS_CHAR;
+      if (activeId === 'default_hero' ) return DEFAULT_CHAR;
       const customList = getCustomCharacters();
       const found = customList.find(c => c.id === activeId);
-      return found || MALEXIUS_CHAR;
+      return found || DEFAULT_CHAR;
     }
 
     function onSelectCharacter(id) {
@@ -3879,7 +3900,7 @@
       }
       saveCustomCharacters(list);
       setActiveCharId(char.id);
-      switchTab('malexius');
+      switchTab('sheet');
 
       if (window.audioEngine && audioEngine.playMagicChime) {
         audioEngine.playMagicChime();
@@ -3888,8 +3909,8 @@
 
     function deleteCurrentCharacter() {
       const activeId = getActiveCharId();
-      if (activeId === 'malexius') {
-        alert("Karakter default Malexius tidak dapat dihapus.");
+      if (activeId === 'default_hero' ) {
+        alert("Karakter default tidak dapat dihapus.");
         return;
       }
       const char = getActiveCharacter();
@@ -3897,7 +3918,7 @@
         let list = getCustomCharacters();
         list = list.filter(c => c.id !== activeId);
         saveCustomCharacters(list);
-        setActiveCharId('malexius');
+        setActiveCharId('default_hero');
       }
     }
 
@@ -3930,10 +3951,10 @@
                 Hit: <b style="color:var(--gold);">${atkBonus >= 0 ? '+' : ''}${atkBonus}</b> | Dmg: <b>${diceDesc}</b> ${atk.dmgType || ''}
               </div>
               <div class="mal-atk-btns">
-                <button class="mal-act-btn atk" onclick="rollMalexiusAction('${atk.name} Attack', {d20: 1}, ${atkBonus})">
+                <button class="mal-act-btn atk" onclick="rollCharacterAction('${atk.name} Attack', {d20: 1}, ${atkBonus})">
                   🎯 Serang (${atkBonus >= 0 ? '+' : ''}${atkBonus})
                 </button>
-                <button class="mal-act-btn dmg" onclick='rollMalexiusAction("${atk.name} Damage", ${JSON.stringify(dmgDice)}, ${dmgMod})'>
+                <button class="mal-act-btn dmg" onclick='rollCharacterAction("${atk.name} Damage", ${JSON.stringify(dmgDice)}, ${dmgMod})'>
                   💥 Damage (${diceDesc})
                 </button>
               </div>
@@ -3951,7 +3972,7 @@
           const sign = mod >= 0 ? '+' : '';
           const tag = sk.expertise ? '[E]' : (sk.prof ? '[*]' : '');
           skillsHtml += `
-            <div class="mal-skill-row" onclick="rollMalexiusAction('${sk.name} Check', {d20: 1}, ${mod})" title="Klik untuk Roll ${sk.name} (${sign}${mod})">
+            <div class="mal-skill-row" onclick="rollCharacterAction('${sk.name} Check', {d20: 1}, ${mod})" title="Klik untuk Roll ${sk.name} (${sign}${mod})">
               <span class="mal-skill-name">${sk.name} <span style="color:var(--gold);font-size:8.5px;">${tag}</span></span>
               <span class="mal-skill-mod">${sign}${mod}</span>
             </div>
@@ -4033,7 +4054,7 @@
               <span class="mal-vital-label">AC</span>
               <span class="mal-vital-val ac">${char.ac || 10}</span>
             </div>
-            <div class="mal-vital-box" style="cursor:pointer;" onclick="rollMalexiusAction('Initiative Check', {d20: 1}, ${initBonus})" title="Klik untuk Roll Initiative">
+            <div class="mal-vital-box" style="cursor:pointer;" onclick="rollCharacterAction('Initiative Check', {d20: 1}, ${initBonus})" title="Klik untuk Roll Initiative">
               <span class="mal-vital-label">Init ⚡</span>
               <span class="mal-vital-val init">${initBonus >= 0 ? '+' : ''}${initBonus}</span>
             </div>
@@ -4049,48 +4070,48 @@
               <span class="mal-stat-name">STR</span>
               <span class="mal-stat-mod">${strMod >= 0 ? '+' : ''}${strMod}</span>
               <span class="mal-stat-score">${strScore}</span>
-              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('STR Check', {d20: 1}, ${strMod})">${strMod >= 0 ? '+' : ''}${strMod}</button>
-              <button class="mal-stat-roll-btn ${saves.STR !== undefined && saves.STR !== strMod ? 'prof' : ''}" onclick="rollMalexiusAction('STR Save', {d20: 1}, ${strSave})">Sv ${strSave >= 0 ? '+' : ''}${strSave}</button>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('STR Check', {d20: 1}, ${strMod})">${strMod >= 0 ? '+' : ''}${strMod}</button>
+              <button class="mal-stat-roll-btn ${saves.STR !== undefined && saves.STR !== strMod ? 'prof' : ''}" onclick="rollCharacterAction('STR Save', {d20: 1}, ${strSave})">Sv ${strSave >= 0 ? '+' : ''}${strSave}</button>
             </div>
             <!-- DEX -->
             <div class="mal-stat-col">
               <span class="mal-stat-name">DEX</span>
               <span class="mal-stat-mod">${dexMod >= 0 ? '+' : ''}${dexMod}</span>
               <span class="mal-stat-score">${dexScore}</span>
-              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('DEX Check', {d20: 1}, ${dexMod})">${dexMod >= 0 ? '+' : ''}${dexMod}</button>
-              <button class="mal-stat-roll-btn ${saves.DEX !== undefined && saves.DEX !== dexMod ? 'prof' : ''}" onclick="rollMalexiusAction('DEX Save', {d20: 1}, ${dexSave})">Sv ${dexSave >= 0 ? '+' : ''}${dexSave}</button>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('DEX Check', {d20: 1}, ${dexMod})">${dexMod >= 0 ? '+' : ''}${dexMod}</button>
+              <button class="mal-stat-roll-btn ${saves.DEX !== undefined && saves.DEX !== dexMod ? 'prof' : ''}" onclick="rollCharacterAction('DEX Save', {d20: 1}, ${dexSave})">Sv ${dexSave >= 0 ? '+' : ''}${dexSave}</button>
             </div>
             <!-- CON -->
             <div class="mal-stat-col">
               <span class="mal-stat-name">CON</span>
               <span class="mal-stat-mod">${conMod >= 0 ? '+' : ''}${conMod}</span>
               <span class="mal-stat-score">${conScore}</span>
-              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('CON Check', {d20: 1}, ${conMod})">${conMod >= 0 ? '+' : ''}${conMod}</button>
-              <button class="mal-stat-roll-btn ${saves.CON !== undefined && saves.CON !== conMod ? 'prof' : ''}" onclick="rollMalexiusAction('CON Save', {d20: 1}, ${conSave})">Sv ${conSave >= 0 ? '+' : ''}${conSave}</button>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('CON Check', {d20: 1}, ${conMod})">${conMod >= 0 ? '+' : ''}${conMod}</button>
+              <button class="mal-stat-roll-btn ${saves.CON !== undefined && saves.CON !== conMod ? 'prof' : ''}" onclick="rollCharacterAction('CON Save', {d20: 1}, ${conSave})">Sv ${conSave >= 0 ? '+' : ''}${conSave}</button>
             </div>
             <!-- INT -->
             <div class="mal-stat-col">
               <span class="mal-stat-name">INT</span>
               <span class="mal-stat-mod">${intMod >= 0 ? '+' : ''}${intMod}</span>
               <span class="mal-stat-score">${intScore}</span>
-              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('INT Check', {d20: 1}, ${intMod})">${intMod >= 0 ? '+' : ''}${intMod}</button>
-              <button class="mal-stat-roll-btn ${saves.INT !== undefined && saves.INT !== intMod ? 'prof' : ''}" onclick="rollMalexiusAction('INT Save', {d20: 1}, ${intSave})">Sv ${intSave >= 0 ? '+' : ''}${intSave}</button>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('INT Check', {d20: 1}, ${intMod})">${intMod >= 0 ? '+' : ''}${intMod}</button>
+              <button class="mal-stat-roll-btn ${saves.INT !== undefined && saves.INT !== intMod ? 'prof' : ''}" onclick="rollCharacterAction('INT Save', {d20: 1}, ${intSave})">Sv ${intSave >= 0 ? '+' : ''}${intSave}</button>
             </div>
             <!-- WIS -->
             <div class="mal-stat-col">
               <span class="mal-stat-name">WIS</span>
               <span class="mal-stat-mod">${wisMod >= 0 ? '+' : ''}${wisMod}</span>
               <span class="mal-stat-score">${wisScore}</span>
-              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('WIS Check', {d20: 1}, ${wisMod})">${wisMod >= 0 ? '+' : ''}${wisMod}</button>
-              <button class="mal-stat-roll-btn ${saves.WIS !== undefined && saves.WIS !== wisMod ? 'prof' : ''}" onclick="rollMalexiusAction('WIS Save', {d20: 1}, ${wisSave})">Sv ${wisSave >= 0 ? '+' : ''}${wisSave}</button>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('WIS Check', {d20: 1}, ${wisMod})">${wisMod >= 0 ? '+' : ''}${wisMod}</button>
+              <button class="mal-stat-roll-btn ${saves.WIS !== undefined && saves.WIS !== wisMod ? 'prof' : ''}" onclick="rollCharacterAction('WIS Save', {d20: 1}, ${wisSave})">Sv ${wisSave >= 0 ? '+' : ''}${wisSave}</button>
             </div>
             <!-- CHA -->
             <div class="mal-stat-col">
               <span class="mal-stat-name">CHA</span>
               <span class="mal-stat-mod">${chaMod >= 0 ? '+' : ''}${chaMod}</span>
               <span class="mal-stat-score">${chaScore}</span>
-              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('CHA Check', {d20: 1}, ${chaMod})">${chaMod >= 0 ? '+' : ''}${chaMod}</button>
-              <button class="mal-stat-roll-btn ${saves.CHA !== undefined && saves.CHA !== chaMod ? 'prof' : ''}" onclick="rollMalexiusAction('CHA Save', {d20: 1}, ${chaSave})">Sv ${chaSave >= 0 ? '+' : ''}${chaSave}</button>
+              <button class="mal-stat-roll-btn" onclick="rollCharacterAction('CHA Check', {d20: 1}, ${chaMod})">${chaMod >= 0 ? '+' : ''}${chaMod}</button>
+              <button class="mal-stat-roll-btn ${saves.CHA !== undefined && saves.CHA !== chaMod ? 'prof' : ''}" onclick="rollCharacterAction('CHA Save', {d20: 1}, ${chaSave})">Sv ${chaSave >= 0 ? '+' : ''}${chaSave}</button>
             </div>
           </div>
         </div>
@@ -4142,8 +4163,8 @@
       if (selector) {
         selector.innerHTML = '';
         const optDefault = document.createElement('option');
-        optDefault.value = 'malexius';
-        optDefault.innerText = '🩸 Malexius, The One Who Defied Fate (Lv 20)';
+        optDefault.value = 'default_hero';
+        optDefault.innerText = '⚔️ Valen, The Shadow Strider (Lv 5)';
         selector.appendChild(optDefault);
 
         customList.forEach(c => {
@@ -4153,29 +4174,29 @@
           selector.appendChild(opt);
         });
 
-        selector.value = activeId;
+        selector.value = activeId === 'default_hero' ? 'default_hero' : activeId;
       }
 
       if (delBtn) {
-        delBtn.style.display = activeId === 'malexius' ? 'none' : 'flex';
+        delBtn.style.display = (activeId === 'default_hero' ) ? 'none' : 'flex';
       }
 
       const tabIcon = document.getElementById('tabCharIcon');
       const tabLabel = document.getElementById('tabCharLabel');
       const charDisplayName = document.getElementById('charDisplayName');
       const activeCombatant = document.getElementById('activeCombatantName');
-      const builtinView = document.getElementById('malexiusBuiltinView');
+      const builtinView = document.getElementById('defaultHeroBuiltinView') ;
       const customView = document.getElementById('customCharView');
 
-      if (activeId === 'malexius') {
+      if (activeId === 'default_hero' ) {
         if (builtinView) builtinView.style.display = 'flex';
         if (customView) customView.style.display = 'none';
-        if (tabIcon) tabIcon.innerText = '🩸';
-        if (tabLabel) tabLabel.innerText = 'Malexius';
-        if (charDisplayName) charDisplayName.innerText = 'MALEXIUS, THE ONE WHO DEFIED FATE';
-        if (activeCombatant) activeCombatant.innerText = 'Malexius';
+        if (tabIcon) tabIcon.innerText = '📜';
+        if (tabLabel) tabLabel.innerText = 'Sheet';
+        if (charDisplayName) charDisplayName.innerText = DEFAULT_CHAR.name;
+        if (activeCombatant) activeCombatant.innerText = DEFAULT_CHAR.shortName;
       } else {
-        const char = customList.find(c => c.id === activeId) || MALEXIUS_CHAR;
+        const char = customList.find(c => c.id === activeId) || DEFAULT_CHAR;
         if (builtinView) builtinView.style.display = 'none';
         if (customView) {
           customView.style.display = 'flex';
@@ -4218,7 +4239,7 @@
     }
 
     // Character Custom Action Roller
-    function rollMalexiusAction(name, dMap, mod, mode = 'normal') {
+    function rollCharacterAction(name, dMap, mod, mode = 'normal') {
       resetSelection(false);
       for (const [d, c] of Object.entries(dMap || {})) {
         diceCounts[d] = c;
@@ -4242,11 +4263,13 @@
       const activeChar = getActiveCharacter();
       const badgePrefix = document.getElementById('heroBadgePrefix');
       const badgeType = document.getElementById('heroBadgeType');
-      const charTag = (activeChar && activeChar.id !== 'malexius') ? (activeChar.shortName || activeChar.name.split(' ')[0]) : 'MALEXIUS';
+      const charTag = (activeChar && activeChar.id !== 'default_hero') 
+        ? (activeChar.shortName || activeChar.name.split(' ')[0]) 
+        : (activeChar ? activeChar.shortName : 'HERO');
       if (badgePrefix) badgePrefix.innerText = charTag.toUpperCase() + ':';
       if (badgeType) badgeType.innerText = name.toUpperCase();
     }
-
+    
     // Trackers
     function toggleTracker(elemId, maxVal) {
       const el = document.getElementById(elemId);
@@ -4314,6 +4337,7 @@
       history = [];
       localStorage.removeItem('dnd_hist');
       renderHistory();
+      renderRecentRolls();
     }
 
     // Sound (Web Audio API)
@@ -4635,7 +4659,7 @@
       round: 1,
       turnIndex: 0,
       combatants: [
-        { id: 'malexius', name: 'Malexius (Kamu)', hp: 193, maxHp: 193, ac: 23, initMod: 16, initRoll: 26, isPlayer: true, conditions: [] }
+        { id: 'player_hero', name: 'Adventurer (Kamu)', hp: 44, maxHp: 44, ac: 16, initMod: 4, initRoll: 14, isPlayer: true, conditions: [] }
       ]
     };
 
@@ -4715,14 +4739,14 @@
 
     function resetCombat() {
       const activeChar = typeof getActiveCharacter === 'function' ? getActiveCharacter() : null;
-      const pName = activeChar ? (activeChar.shortName || activeChar.name) : 'Malexius';
-      const pHp = (activeChar && activeChar.hp) ? activeChar.hp : 193;
-      const pAc = (activeChar && activeChar.ac) ? (typeof activeChar.ac === 'number' ? activeChar.ac : parseInt(activeChar.ac) || 23) : 23;
-      const pInit = (activeChar && activeChar.initMod !== undefined) ? activeChar.initMod : 16;
+      const pName = activeChar ? (activeChar.shortName || activeChar.name) : 'Adventurer';
+      const pHp = (activeChar && activeChar.hp) ? activeChar.hp : 44;
+      const pAc = (activeChar && activeChar.ac) ? (typeof activeChar.ac === 'number' ? activeChar.ac : parseInt(activeChar.ac) || 16) : 16;
+      const pInit = (activeChar && activeChar.initMod !== undefined) ? activeChar.initMod : 4;
       combatState.round = 1;
       combatState.turnIndex = 0;
       combatState.combatants = [
-        { id: activeChar ? activeChar.id : 'malexius', name: `${pName} (Kamu)`, hp: pHp, maxHp: pHp, ac: pAc, initMod: pInit, initRoll: pInit + 10, isPlayer: true, conditions: [] }
+        { id: activeChar ? activeChar.id : 'player_hero', name: `${pName} (Kamu)`, hp: pHp, maxHp: pHp, ac: pAc, initMod: pInit, initRoll: pInit + 10, isPlayer: true, conditions: [] }
       ];
       renderCombatants();
     }
@@ -4881,12 +4905,32 @@
       });
     }
 
+        function renderRecentRolls() {
+      const container = document.getElementById('diceRecentList');
+      if (!container) return;
+      if (!history || history.length === 0) {
+        container.innerHTML = '<div style="font-size:10px;color:var(--text-dim);font-style:italic;">Belum ada riwayat roll.</div>';
+        return;
+      }
+      const items = history.slice(0, 3);
+      container.innerHTML = items.map(h => `
+        <div class="dice-recent-item" onclick="executeAIRoll('${h.formula.replace(/ \(Adv\)|\(Disadv\)|\(Rerolled\)/g, '')}')">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;font-weight:700;color:var(--text);">${h.formula}</span>
+            <span style="font-size:9px;color:var(--text-dim);">${h.time}</span>
+          </div>
+          <div style="font-size:12px;font-weight:900;color:var(--gold);">${h.total}</div>
+        </div>
+      `).join('');
+    }
+
     // Call on load
     document.addEventListener('DOMContentLoaded', () => {
       renderCustomMacros();
       renderCombatants();
       if (typeof updateActiveCharacterUI === 'function') updateActiveCharacterUI();
       if (typeof setupDropzone === 'function') setupDropzone();
+      if (typeof renderRecentRolls === 'function') renderRecentRolls();
     });
   </script>
 </body>
