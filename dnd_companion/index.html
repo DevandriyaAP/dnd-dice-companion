@@ -1,0 +1,4893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D&D Beyond Dice</title>
+  <style>
+    :root {
+      --bg: #101217;
+      --card-bg: #181b22;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: #222631;
+      
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --gold: #f59e0b;
+      --gold-bg: rgba(245, 158, 11, 0.15);
+      --gold-border: rgba(245, 158, 11, 0.4);
+
+      --red: #e11d48;
+      --red-hover: #f43f5e;
+      --red-glow: rgba(225, 29, 72, 0.4);
+
+      --purple: #a855f7;
+      --green: #10b981;
+
+      --sel-bg: #cad4df;
+      --sel-text: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px;
+      position: relative;
+    }
+
+    /* Top Capsule Header */
+    .header-bar {
+      height: 42px;
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #14171f;
+      border-bottom: 1px solid var(--card-border);
+      flex-shrink: 0;
+      cursor: move;
+    }
+
+    /* Kopi Cat Avatar */
+    .kopi-box {
+      width: 26px;
+      height: 26px;
+      background: #1e222d;
+      border: 1px solid var(--card-border);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .kopi-box:hover {
+      transform: scale(1.08);
+    }
+    .kopi-svg {
+      width: 18px;
+      height: 16px;
+    }
+
+    /* Navigation Pills */
+    .nav-pills {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 1;
+    }
+    .pill-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 7px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .pill-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+    .pill-btn.active-dice {
+      background: var(--gold-bg);
+      border-color: var(--gold-border);
+      color: var(--gold);
+    }
+    .pill-btn.active-hist {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: rgba(168, 85, 247, 0.4);
+      color: #c084fc;
+    }
+    .pill-btn.active-preset {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+    .pill-btn.active-malexius {
+      background: rgba(220, 38, 38, 0.2);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #f87171;
+    }
+    .pill-btn.active-ai {
+      background: rgba(147, 51, 234, 0.2);
+      border-color: rgba(168, 85, 247, 0.5);
+      color: #c084fc;
+    }
+
+    /* Size Switcher Pills (S / M / L) */
+    .size-switcher {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1px;
+      gap: 1px;
+      margin-left: 2px;
+      flex-shrink: 0;
+    }
+    .size-btn {
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: var(--text-dim);
+      font-size: 10px;
+      font-weight: 800;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .size-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .size-btn.active {
+      background: var(--gold-bg);
+      color: var(--gold);
+      font-weight: 900;
+    }
+
+    /* Header Window Controls */
+    .header-ctrls {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+    .ctrl-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+    .ctrl-btn.active-pin {
+      background: var(--gold-bg);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .ctrl-btn.close {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.6);
+      color: #fca5a5;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .ctrl-btn.close:hover {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+    }
+
+    @media (max-width: 440px) {
+      .tab-label {
+        display: none;
+      }
+      .pill-btn {
+        padding: 3px 6px;
+      }
+    }
+
+    /* Main Content Area */
+    .main-body {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    /* Modern Dark Minimalist Scrollbars */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: #272c3a #0c0e14;
+    }
+    *::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    *::-webkit-scrollbar-track {
+      background: #0c0e14;
+      border-radius: 4px;
+    }
+    *::-webkit-scrollbar-thumb {
+      background: #272c3a;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    *::-webkit-scrollbar-thumb:hover {
+      background: #3c4458;
+    }
+    *::-webkit-scrollbar-button {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    *::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    /* Specifically for dice results grid */
+    .dice-results-grid::-webkit-scrollbar {
+      width: 5px;
+    }
+    .dice-results-grid::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 4px;
+    }
+    .dice-results-grid::-webkit-scrollbar-thumb {
+      background: #252a38;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .dice-results-grid::-webkit-scrollbar-thumb:hover {
+      background: #3a4155;
+    }
+
+    .tab-page {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+    }
+    .tab-page.active {
+      display: flex;
+    }
+
+    /* Character & Roll Banner */
+    .char-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2px;
+    }
+    .char-name {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--gold);
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .char-name:hover {
+      opacity: 0.85;
+    }
+    .roll-time {
+      font-size: 10px;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    /* Hero Card (Compact D&D Beyond Pill) */
+    .hero-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+    .hero-badge-pill {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    .hero-badge-pill span {
+      color: var(--gold);
+    }
+    .hero-formula {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 250px;
+    }
+    .hero-divider {
+      width: 1px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 0 10px;
+      flex-shrink: 0;
+    }
+    .hero-right {
+      min-width: 48px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .hero-total {
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+    }
+    .hero-total.crit-20 {
+      color: #fde047;
+      text-shadow: 0 0 16px rgba(250, 204, 21, 0.8);
+      animation: critGlow 1.2s infinite alternate;
+    }
+    .hero-total.crit-1 {
+      color: #f87171;
+      text-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
+    }
+    @keyframes critGlow {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.06); }
+    }
+
+    /* Crit Announcement Banner */
+    .crit-strip {
+      display: none;
+      padding: 4px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      text-align: center;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .crit-strip.crit-20 {
+      display: block;
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fde047;
+    }
+    .crit-strip.crit-1 {
+      display: block;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+
+    /* 2D Dice Result Grid & Reroll Toolbar */
+    .dice-results-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 10px;
+      padding: 8px 10px;
+      border: 1px solid var(--card-border);
+    }
+    .dice-results-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      gap: 4px;
+    }
+    .reroll-tools {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .reroll-pill-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 7px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .reroll-pill-btn:hover {
+      background: var(--gold-bg);
+      border-color: var(--gold-border);
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    .dice-results-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 110px;
+      overflow-y: auto;
+      padding: 2px 0;
+    }
+    .res-tile {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 900;
+      color: #ffffff;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .res-tile:hover {
+      transform: translateY(-2px) scale(1.08);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
+    }
+    .res-tile .die-type {
+      position: absolute;
+      bottom: 2px;
+      right: 3px;
+      font-size: 7px;
+      font-weight: 700;
+      opacity: 0.75;
+    }
+    .res-tile .reroll-icon {
+      position: absolute;
+      top: 1px;
+      right: 2px;
+      font-size: 8px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .res-tile:hover .reroll-icon {
+      opacity: 0.9;
+    }
+    .res-tile.dropped {
+      opacity: 0.35;
+      filter: grayscale(1);
+      text-decoration: line-through;
+    }
+    .res-tile.rerolling {
+      animation: tileReroll 0.24s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes tileReroll {
+      0% { transform: scale(0.9) rotate(0deg); filter: brightness(1.6); }
+      50% { transform: scale(1.25) rotate(180deg); filter: brightness(2.2); }
+      100% { transform: scale(1) rotate(360deg); filter: brightness(1); }
+    }
+
+    /* Dice Skins */
+    .skin-icewind {
+      background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
+      border: 1px solid #38bdf8;
+    }
+    .skin-dragon {
+      background: linear-gradient(135deg, #991b1b 0%, #ea580c 100%);
+      border: 1px solid #fb923c;
+    }
+    .skin-shadow {
+      background: linear-gradient(135deg, #3b0764 0%, #7e22ce 100%);
+      border: 1px solid #c084fc;
+    }
+    .skin-emerald {
+      background: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+      border: 1px solid #34d399;
+    }
+
+    /* Slim Skin Header */
+    .skin-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 6px 10px;
+    }
+    .skin-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .skin-cube-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    .skin-label-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .skin-dropdown {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 3px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
+    .skin-dropdown option {
+      background: #181b22;
+      color: #ffffff;
+    }
+
+    /* Dice Selection Grid */
+    .dice-card-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .dice-row-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .dice-row-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      padding: 0 16px;
+    }
+
+    /* Individual Die Tile */
+    .die-slot {
+      height: 66px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.15s ease;
+    }
+    .die-slot:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+    .die-slot:active {
+      transform: scale(0.96);
+    }
+
+    .die-slot.selected {
+      background: var(--sel-bg);
+      border-color: #ffffff;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    }
+    .die-slot.selected .die-name {
+      color: var(--sel-text);
+      font-weight: 900;
+    }
+    .die-slot.selected .die-icon-svg polygon,
+    .die-slot.selected .die-icon-svg polyline,
+    .die-slot.selected .die-icon-svg line {
+      stroke: #0f172a !important;
+    }
+    .die-slot.selected .die-icon-svg polygon {
+      fill: #475569 !important;
+      opacity: 0.8 !important;
+    }
+    .die-slot.selected .die-icon-svg text {
+      fill: #ffffff !important;
+    }
+
+    .die-icon-svg {
+      width: 34px;
+      height: 34px;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
+      transition: transform 0.15s;
+    }
+    .die-slot:hover .die-icon-svg {
+      transform: scale(1.08);
+    }
+
+    .die-name {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-top: 2px;
+      letter-spacing: 0.4px;
+    }
+
+    /* Counter Badge */
+    .die-count-badge {
+      position: absolute;
+      top: -4px;
+      right: 50%;
+      transform: translateX(50%);
+      width: 18px;
+      height: 18px;
+      background: #0f172a;
+      color: #ffffff;
+      border: 1.5px solid #ffffff;
+      border-radius: 50%;
+      font-size: 9.5px;
+      font-weight: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      z-index: 2;
+    }
+    .die-slot.selected .die-count-badge {
+      display: flex;
+    }
+
+    /* Controls: Advantage & Modifier */
+    .adv-mod-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .mode-group {
+      display: flex;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .mode-tab {
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 4px 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .mode-tab:hover {
+      color: var(--text);
+    }
+    .mode-tab.active {
+      background: var(--gold-bg);
+      color: var(--gold);
+      font-weight: 800;
+    }
+
+    .mod-stepper {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 2px 6px;
+    }
+    .mod-tag {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+    .step-btn {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .mod-num {
+      font-size: 12px;
+      font-weight: 800;
+      color: #ffffff;
+      min-width: 22px;
+      text-align: center;
+    }
+
+    /* Action Buttons */
+    .action-bar {
+      display: flex;
+      gap: 8px;
+    }
+    .reset-btn {
+      flex: 1;
+      height: 40px;
+      background: #ffffff;
+      color: #0f172a;
+      border: none;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: all 0.15s;
+    }
+    .reset-btn:hover {
+      background: #e2e8f0;
+      transform: translateY(-1px);
+    }
+    .reset-btn:active {
+      transform: scale(0.97);
+    }
+
+    .roll-btn {
+      flex: 1.6;
+      height: 40px;
+      background: var(--red);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px var(--red-glow);
+      transition: all 0.15s;
+    }
+    .roll-btn:hover {
+      background: var(--red-hover);
+      box-shadow: 0 6px 18px rgba(225, 29, 72, 0.6);
+      transform: translateY(-1px);
+    }
+    .roll-btn:active {
+      transform: scale(0.97);
+    }
+
+    .clear-link {
+      text-align: right;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: -4px;
+      padding-right: 4px;
+    }
+    .clear-link:hover {
+      text-decoration: underline;
+    }
+
+    /* History Tab */
+    .history-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      flex: 1;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .hist-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .hist-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--purple);
+      text-transform: uppercase;
+    }
+    .hist-clear {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text-dim);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    .hist-clear:hover {
+      color: #f87171;
+    }
+    .hist-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .hist-entry {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .hist-entry-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9.5px;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+    .hist-entry-mid {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .hist-entry-formula {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .hist-entry-val {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+    .hist-entry-sub {
+      font-size: 9.5px;
+      font-family: monospace;
+      color: var(--text-dim);
+    }
+
+    /* Presets Tab */
+    .presets-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .preset-sec {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--green);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .preset-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(16, 185, 129, 0.4);
+      transform: translateX(2px);
+    }
+    .preset-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .preset-math {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #34d399;
+      font-family: monospace;
+    }
+
+    /* AI COMPANION TAB */
+    .ai-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      min-height: 0;
+    }
+    .ai-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+    }
+    .ai-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #c084fc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ai-status-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      padding: 2px 7px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ai-chips-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .ai-chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .ai-chip:hover {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: rgba(168, 85, 247, 0.4);
+      color: #e9d5ff;
+    }
+    .ai-chat-box {
+      flex: 1;
+      min-height: 220px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ai-msg {
+      max-width: 88%;
+      padding: 8px 11px;
+      border-radius: 10px;
+      font-size: 11.5px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+    .ai-msg.user {
+      align-self: flex-end;
+      background: #2563eb;
+      color: #ffffff;
+      border-bottom-right-radius: 2px;
+    }
+    .ai-msg.bot {
+      align-self: flex-start;
+      background: #181d28;
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      color: #e2e8f0;
+      border-bottom-left-radius: 2px;
+    }
+    .ai-msg.bot b, .ai-msg.bot strong {
+      color: #fde047;
+    }
+    .ai-roll-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--gold-bg);
+      border: 1px solid var(--gold-border);
+      color: var(--gold);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      margin: 3px 2px;
+      transition: all 0.15s;
+    }
+    .ai-roll-btn:hover {
+      background: rgba(245, 158, 11, 0.3);
+      transform: scale(1.04);
+    }
+    .ai-input-wrap {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .ai-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 11.5px;
+      color: var(--text);
+      outline: none;
+      transition: border 0.15s;
+    }
+    .ai-input:focus {
+      border-color: #a855f7;
+    }
+    .ai-send-btn {
+      background: #9333ea;
+      border: none;
+      border-radius: 8px;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 12px;
+      padding: 8px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s;
+    }
+    .ai-send-btn:hover {
+      background: #7e22ce;
+    }
+    .ai-typing {
+      display: none;
+      font-size: 10.5px;
+      color: #a855f7;
+      font-style: italic;
+      padding: 2px 4px;
+    }
+
+    /* FEATURE 1: COMBAT HUD */
+    .combat-hud {
+      background: #11141c;
+      border-bottom: 2px solid rgba(239, 68, 68, 0.4);
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      animation: slideDown 0.2s ease-out;
+      z-index: 10;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .combat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .combat-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #f87171;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .combat-round-badge {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      border-radius: 12px;
+      padding: 1px 6px;
+      font-size: 10px;
+    }
+    .combat-ctrls {
+      display: flex;
+      gap: 4px;
+    }
+    .combat-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 7px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .combat-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .combat-btn.gold {
+      background: var(--gold-bg);
+      border-color: var(--gold-border);
+      color: var(--gold);
+    }
+    .combat-btn.red {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .active-turn-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .turn-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ac-badge {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #7dd3fc;
+      border-radius: 4px;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 1px 4px;
+    }
+    .hp-stepper-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hp-display {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .hp-buttons {
+      display: flex;
+      gap: 2px;
+    }
+    .hp-btn {
+      border: none;
+      border-radius: 4px;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 5px;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .hp-btn:active { transform: scale(0.92); }
+    .hp-btn.neg { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
+    .hp-btn.pos { background: rgba(34, 197, 94, 0.25); color: #86efac; }
+    .hp-btn.max { background: rgba(245, 158, 11, 0.25); color: #fde047; }
+
+    .conditions-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .cond-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-dim);
+      border-radius: 12px;
+      font-size: 9.5px;
+      font-weight: 600;
+      padding: 2px 7px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+    }
+    .cond-chip:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text);
+    }
+    .cond-chip.active {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.6);
+      color: #fca5a5;
+      font-weight: 800;
+    }
+
+    .combatants-roster {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      padding: 3px 0;
+    }
+    .roster-card {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 4px 7px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .roster-card.active {
+      border-color: var(--gold);
+      background: rgba(245, 158, 11, 0.15);
+    }
+    .roster-init {
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+    .roster-name {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .roster-hp {
+      font-size: 9.5px;
+      color: #4ade80;
+    }
+
+    .combat-add-bar {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .combat-input {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 5px;
+      padding: 3px 6px;
+      font-size: 10px;
+      color: var(--text);
+      outline: none;
+    }
+    .combat-input.num { text-align: center; }
+
+    /* FEATURE 3: SOUNDBOARD & AMBIENCE DRAWER */
+    .soundboard-drawer {
+      background: #11141c;
+      border-bottom: 2px solid rgba(168, 85, 247, 0.4);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      animation: slideDown 0.2s ease-out;
+      z-index: 10;
+    }
+    .sb-sec-title {
+      font-size: 10px;
+      font-weight: 800;
+      color: #c084fc;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sb-btn-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+    }
+    .sb-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 5px 2px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .sb-btn:hover {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: rgba(168, 85, 247, 0.5);
+      color: #e9d5ff;
+    }
+    .amb-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .amb-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 5px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .amb-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .amb-card.playing {
+      border-color: #34d399;
+      background: rgba(16, 185, 129, 0.15);
+      color: #86efac;
+    }
+    .amb-name {
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .amb-status {
+      font-size: 8.5px;
+      opacity: 0.8;
+    }
+
+    /* FEATURE 2: MACRO & COMBO VAULT */
+    .macro-vault-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .macro-builder-box {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .macro-item-card {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .macro-item-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+    .macro-tag {
+      font-size: 8.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .macro-tag.atk { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+    .macro-tag.dmg { background: rgba(245, 158, 11, 0.2); color: #fde047; }
+    .macro-tag.spell { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+    .macro-tag.heal { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+
+    /* CHARACTER MANAGER & IMPORT */
+    .char-manager-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: #14171f;
+      border: 1px solid var(--card-border);
+      border-radius: 9px;
+      padding: 5px 8px;
+      flex-shrink: 0;
+    }
+    .char-selector-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex: 1;
+      min-width: 0;
+    }
+    .char-dropdown {
+      background: #0d0f14;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 6px;
+      padding: 4px 6px;
+      flex: 1;
+      min-width: 0;
+      outline: none;
+      cursor: pointer;
+    }
+    .char-dropdown:focus {
+      border-color: var(--gold);
+    }
+    .char-actions-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .char-action-btn {
+      background: #1e222d;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 4px 7px;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.15s;
+    }
+    .char-action-btn:hover {
+      background: #272d3b;
+      color: var(--text);
+    }
+    .char-action-btn.import {
+      background: var(--gold-bg);
+      border-color: var(--gold-border);
+      color: var(--gold);
+    }
+    .char-action-btn.import:hover {
+      background: rgba(245, 158, 11, 0.25);
+    }
+    .char-action-btn.del {
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .char-action-btn.del:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* SHEET IMPORT MODAL */
+    .sheet-modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+    .sheet-modal-backdrop.active {
+      display: flex;
+    }
+    .sheet-modal-content {
+      background: #141720;
+      border: 1px solid var(--gold-border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 18px rgba(245, 158, 11, 0.15);
+      width: 100%;
+      max-width: 400px;
+      max-height: 88vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 14px;
+    }
+    .sheet-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 8px;
+    }
+    .sheet-modal-title {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sheet-dropzone {
+      border: 2px dashed rgba(245, 158, 11, 0.45);
+      background: rgba(245, 158, 11, 0.04);
+      border-radius: 10px;
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .sheet-dropzone:hover, .sheet-dropzone.dragover {
+      border-color: var(--gold);
+      background: rgba(245, 158, 11, 0.09);
+    }
+    .sheet-loading-overlay {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+      text-align: center;
+    }
+    .sheet-loading-spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid rgba(245, 158, 11, 0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* MALEXIUS CHARACTER SHEET TAB */
+    .mal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mal-header {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+    }
+    .mal-name-hero {
+      font-size: 13.5px;
+      font-weight: 900;
+      letter-spacing: 0.6px;
+      color: #ef4444;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .mal-sub-hero {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .mal-badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .mal-badge {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    .mal-badge.gold {
+      background: var(--gold-bg);
+      border-color: var(--gold-border);
+      color: var(--gold);
+    }
+    .mal-badge.cyan {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+    }
+    .mal-badge.purple {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: rgba(168, 85, 247, 0.4);
+      color: #c084fc;
+    }
+
+    /* Vitals Grid */
+    .mal-vitals-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+    .mal-vital-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 5px 3px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .mal-vital-label {
+      font-size: 8.5px;
+      font-weight: 800;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .mal-vital-val {
+      font-size: 13px;
+      font-weight: 900;
+      color: #ffffff;
+      margin-top: 1px;
+    }
+    .mal-vital-val.hp { color: #4ade80; }
+    .mal-vital-val.thp { color: #38bdf8; }
+    .mal-vital-val.ac { color: #f59e0b; }
+    .mal-vital-val.init {
+      color: #c084fc;
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
+    .mal-vital-val.init:hover {
+      color: #e9d5ff;
+    }
+
+    /* Ability Scores Grid (6 columns) */
+    .mal-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+    }
+    .mal-stat-col {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 5px 1px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+    }
+    .mal-stat-name {
+      font-size: 9px;
+      font-weight: 900;
+      color: var(--text-muted);
+    }
+    .mal-stat-mod {
+      font-size: 12px;
+      font-weight: 900;
+      color: #ffffff;
+    }
+    .mal-stat-score {
+      font-size: 8.5px;
+      color: var(--text-dim);
+    }
+    .mal-stat-roll-btn {
+      margin-top: 3px;
+      font-size: 8px;
+      font-weight: 800;
+      padding: 2px 2px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 92%;
+      transition: all 0.12s;
+    }
+    .mal-stat-roll-btn:hover {
+      background: var(--gold-bg);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .mal-stat-roll-btn.prof {
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(56, 189, 248, 0.12);
+    }
+
+    /* Section Subheading */
+    .mal-section-title {
+      font-size: 10px;
+      font-weight: 800;
+      color: #ef4444;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 2px;
+    }
+
+    /* Attack & Action Items */
+    .mal-atk-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 9px;
+      padding: 7px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .mal-atk-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mal-atk-name {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .mal-atk-meta {
+      font-size: 9.5px;
+      color: var(--text-dim);
+    }
+    .mal-atk-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .mal-act-btn {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 4px 7px;
+      cursor: pointer;
+      transition: all 0.12s;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .mal-act-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+    .mal-act-btn.atk {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+    .mal-act-btn.atk:hover {
+      background: #ef4444;
+      color: #ffffff;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+    .mal-act-btn.dmg {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #fde047;
+    }
+    .mal-act-btn.dmg:hover {
+      background: #f59e0b;
+      color: #000000;
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+    }
+    .mal-act-btn.special {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: rgba(168, 85, 247, 0.4);
+      color: #d8b4fe;
+    }
+    .mal-act-btn.special:hover {
+      background: #9333ea;
+      color: #ffffff;
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.5);
+    }
+
+    /* Skills Grid */
+    .mal-skills-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5px;
+    }
+    .mal-skill-row {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 7px;
+      padding: 5px 7px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .mal-skill-row:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .mal-skill-name {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .mal-skill-mod {
+      font-size: 10.5px;
+      font-weight: 900;
+      color: #38bdf8;
+      font-family: monospace;
+    }
+
+    /* Trackers Grid */
+    .mal-trackers-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5px;
+    }
+    .mal-track-box {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 5px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mal-track-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .mal-track-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .mal-track-val {
+      font-size: 11px;
+      font-weight: 900;
+      color: #ffffff;
+      min-width: 24px;
+      text-align: center;
+    }
+    .mal-track-btn {
+      width: 19px;
+      height: 19px;
+      border-radius: 4px;
+      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mal-track-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Attunements & Wealth Row */
+    .mal-info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 6px;
+    }
+    .mal-info-highlight {
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    /* Interactive Edge and Corner Resizers */
+    .resizer-r {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 7px;
+      height: 100%;
+      cursor: ew-resize;
+      z-index: 9998;
+    }
+    .resizer-b {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 7px;
+      cursor: ns-resize;
+      z-index: 9998;
+    }
+    .resizer-rb {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 18px;
+      height: 18px;
+      cursor: nwse-resize;
+      z-index: 9999;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding: 2px 3px;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 12px;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .resizer-rb:hover {
+      color: var(--gold);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Draggable Capsule Bar -->
+  <div class="header-bar pywebview-drag-region" id="headerBar">
+    <!-- Kopi Pixel Cat -->
+    <div class="kopi-box no-drag" onclick="kopiPoke()" title="Kopi: Click me!">
+      <svg class="kopi-svg" viewBox="0 0 24 20">
+        <polygon points="3,0 8,8 3,8" fill="#333846" />
+        <polygon points="21,0 16,8 21,8" fill="#333846" />
+        <polygon points="4,2 7,7 4,7" fill="#f472b6" />
+        <polygon points="20,2 17,7 20,7" fill="#f472b6" />
+        <rect x="2" y="6" width="20" height="13" rx="4" fill="#252936" />
+        <rect id="kopiEyeL" x="6" y="10" width="3" height="3" rx="1" fill="#f59e0b" />
+        <rect id="kopiEyeR" x="15" y="10" width="3" height="3" rx="1" fill="#f59e0b" />
+        <rect x="11" y="13" width="2" height="1.5" rx="0.5" fill="#f472b6" />
+      </svg>
+    </div>
+
+    <!-- Navigation Pills -->
+    <div class="nav-pills no-drag">
+      <button class="pill-btn active-dice" id="tabDice" onclick="switchTab('dice')" title="Dice Roller">
+        <span>🎲</span> <span class="tab-label">Dice</span>
+      </button>
+      <button class="pill-btn" id="tabHist" onclick="switchTab('history')" title="Roll History">
+        <span>📜</span> <span class="tab-label">Hist</span>
+      </button>
+      <button class="pill-btn" id="tabPreset" onclick="switchTab('presets')" title="Attack & Ability Presets">
+        <span>⚔️</span> <span class="tab-label">Presets</span>
+      </button>
+      <button class="pill-btn" id="tabMalexius" onclick="switchTab('malexius')" title="Sheet Karakter D&D 5e">
+        <span id="tabCharIcon">🩸</span> <span class="tab-label" id="tabCharLabel">Malexius</span>
+      </button>
+      <button class="pill-btn" id="tabAI" onclick="switchTab('ai')" title="D&D Companion AI & Rules Oracle">
+        <span>🔮</span> <span class="tab-label">AI</span>
+      </button>
+    </div>
+
+    <!-- Quick Size Switcher (S / M / L) -->
+    <div class="size-switcher no-drag" title="Ubah Ukuran Jendela: S (360x540), M (450x680), L (560x820)">
+      <button class="size-btn" id="sizeS" onclick="setWindowPresetSize('S')">S</button>
+      <button class="size-btn active" id="sizeM" onclick="setWindowPresetSize('M')">M</button>
+      <button class="size-btn" id="sizeL" onclick="setWindowPresetSize('L')">L</button>
+    </div>
+
+    <!-- Window Controls: Sound, Pin, Minimize, Maximize, Close -->
+    <div class="header-ctrls no-drag">
+      <button class="ctrl-btn" id="combatBtn" onclick="toggleCombatHUD()" title="Combat & Turn Tracker HUD">⚔️</button>
+      <button class="ctrl-btn" id="soundBtn" onclick="toggleSoundboard()" title="Tabletop Audio Soundboard & Ambience">🔊</button>
+      <button class="ctrl-btn" id="pinBtn" onclick="togglePin()" title="Pin Always on Top">📌</button>
+      <button class="ctrl-btn" onclick="minimizeWidget()" title="Minimize">&#9472;</button>
+      <button class="ctrl-btn" id="maxBtn" onclick="toggleMaximize()" title="Maximize / Restore">&#9633;</button>
+      <button class="ctrl-btn close" onclick="closeWidget()" title="Close Application">&#10005;</button>
+    </div>
+  </div>
+
+  <!-- FEATURE 1: COMBAT & TURN ORDER TRACKER HUD -->
+  <div class="combat-hud" id="combatHud" style="display: none;">
+    <div class="combat-top">
+      <div class="combat-title">
+        <span>⚔️ Combat Tracker</span>
+        <span class="combat-round-badge">Ronde <span id="combatRound">1</span></span>
+      </div>
+      <div class="combat-ctrls">
+        <button class="combat-btn" onclick="nextCombatTurn()" title="Lanjut ke giliran berikutnya">Next Turn ▶</button>
+        <button class="combat-btn" onclick="nextCombatRound()" title="Mulai ronde berikutnya">+ Ronde</button>
+        <button class="combat-btn red" onclick="resetCombat()" title="Reset pertempuran">↺</button>
+      </div>
+    </div>
+
+    <!-- Active Combatant Banner & HP Stepper -->
+    <div class="active-turn-box">
+      <div class="turn-info">
+        <span style="font-size: 10px; color: var(--gold); text-transform: uppercase;">Giliran:</span>
+        <span id="activeCombatantName" style="font-size: 13px; font-weight: 900; color: #ffffff;">Malexius</span>
+        <span id="activeCombatantAC" class="ac-badge">🛡️ AC 23</span>
+      </div>
+      <div class="hp-stepper-wrap">
+        <div class="hp-display">
+          <span>HP:</span>
+          <span id="activeCombatantHP" style="font-weight: 800; color: #4ade80;">193</span>/<span id="activeCombatantMaxHP">193</span>
+        </div>
+        <div class="hp-buttons">
+          <button class="hp-btn neg" onclick="adjustActiveHP(-10)">-10</button>
+          <button class="hp-btn neg" onclick="adjustActiveHP(-5)">-5</button>
+          <button class="hp-btn neg" onclick="adjustActiveHP(-1)">-1</button>
+          <button class="hp-btn pos" onclick="adjustActiveHP(1)">+1</button>
+          <button class="hp-btn pos" onclick="adjustActiveHP(5)">+5</button>
+          <button class="hp-btn max" onclick="resetActiveHP()" title="Pulihkan HP Penuh">Max</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5e Condition Chips -->
+    <div class="conditions-wrap" id="conditionsWrap">
+      <span class="cond-chip" data-cond="Concentrating" onclick="toggleCondition('Concentrating')">🧠 Concentrating</span>
+      <span class="cond-chip" data-cond="Invisible" onclick="toggleCondition('Invisible')">👻 Invisible</span>
+      <span class="cond-chip" data-cond="Haste" onclick="toggleCondition('Haste')">💨 Haste</span>
+      <span class="cond-chip" data-cond="Prone" onclick="toggleCondition('Prone')">🧎 Prone</span>
+      <span class="cond-chip" data-cond="Stunned" onclick="toggleCondition('Stunned')">⚡ Stunned</span>
+      <span class="cond-chip" data-cond="Blinded" onclick="toggleCondition('Blinded')">👁️ Blinded</span>
+      <span class="cond-chip" data-cond="Poisoned" onclick="toggleCondition('Poisoned')">🤢 Poisoned</span>
+      <span class="cond-chip" data-cond="Charmed" onclick="toggleCondition('Charmed')">💖 Charmed</span>
+    </div>
+
+    <!-- Combatants Roster & Quick Add -->
+    <div class="combatants-roster" id="combatantsRoster"></div>
+
+    <div class="combat-add-bar">
+      <input type="text" id="newCombatantName" class="combat-input" placeholder="Nama Monster / Musuh..." style="flex:1;" />
+      <input type="number" id="newCombatantHP" class="combat-input num" placeholder="HP" style="width: 50px;" />
+      <input type="number" id="newCombatantInitMod" class="combat-input num" placeholder="Init" style="width: 45px;" />
+      <button class="combat-btn" onclick="addCombatant()">+ Tambah</button>
+      <button class="combat-btn gold" onclick="rollAllInitiative()" title="Roll inisiatif untuk semua combatant">🎲 Roll Inisiatif</button>
+    </div>
+  </div>
+
+  <!-- FEATURE 3: TABLETOP AUDIO SOUNDBOARD & AMBIENCE DRAWER -->
+  <div class="soundboard-drawer" id="soundboardDrawer" style="display: none;">
+    <div class="sb-sec-title">
+      <span>🔊 Tabletop Soundboard</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span style="font-size:9px;color:var(--text-dim);">Vol:</span>
+        <input type="range" min="0" max="100" value="50" id="sbVolume" style="width:65px;accent-color:#a855f7;cursor:pointer;" oninput="updateAudioVolume(this.value)" />
+      </div>
+    </div>
+    <div class="sb-btn-grid">
+      <button class="sb-btn" onclick="audioEngine.playDiceClatter()" title="Suara kocokan dadu asli">🎲 Dadu</button>
+      <button class="sb-btn" onclick="audioEngine.playCritBoom()" title="Dentuman Natural 20">⚡ Nat 20</button>
+      <button class="sb-btn" onclick="audioEngine.playFumbleShatter()" title="Suara gagal Natural 1">💀 Nat 1</button>
+      <button class="sb-btn" onclick="audioEngine.playBladeClash()" title="Tebasan senjata">⚔️ Tebas</button>
+      <button class="sb-btn" onclick="audioEngine.playMagicChime()" title="Energi sihir">✨ Sihir</button>
+    </div>
+
+    <div class="sb-sec-title" style="margin-top:4px;">
+      <span>🌌 Ambience Meja (Background Audio)</span>
+    </div>
+    <div class="amb-grid">
+      <div class="amb-card" id="ambTavern" onclick="toggleAmbienceMode('tavern')">
+        <div>
+          <div class="amb-name">🔥 Kedai Api</div>
+          <div class="amb-status" id="stTavern">Mati</div>
+        </div>
+        <span style="font-size:12px;">🍻</span>
+      </div>
+      <div class="amb-card" id="ambRain" onclick="toggleAmbienceMode('rain')">
+        <div>
+          <div class="amb-name">🌧️ Hujan Goa</div>
+          <div class="amb-status" id="stRain">Mati</div>
+        </div>
+        <span style="font-size:12px;">⛈️</span>
+      </div>
+      <div class="amb-card" id="ambAstral" onclick="toggleAmbienceMode('astral')">
+        <div>
+          <div class="amb-name">🌌 Astral 432Hz</div>
+          <div class="amb-status" id="stAstral">Mati</div>
+        </div>
+        <span style="font-size:12px;">🔮</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Body -->
+  <div class="main-body" id="mainBody">
+
+    <!-- PAGE 1: DICE ROLLER -->
+    <div class="tab-page active" id="pageDice">
+
+      <!-- Character Banner -->
+      <div class="char-line">
+        <div class="char-name" onclick="renameChar()" title="Click to rename character">
+          <span id="charDisplayName">MALEXIUS, THE ONE WHO DEFIED FATE</span>
+          <span style="font-size: 9px; opacity: 0.6;">✎</span>
+        </div>
+        <div class="roll-time" id="rollTime">Ready</div>
+      </div>
+
+      <!-- Hero Result Card (Compact D&D Beyond Pill) -->
+      <div class="hero-box">
+        <div class="hero-left">
+          <div class="hero-badge-pill" id="heroBadgeWrap"><span id="heroBadgePrefix" style="color:var(--text-muted);">CUSTOM:</span> <span id="heroBadgeType" style="color:var(--gold);">ROLL</span></div>
+          <div class="hero-formula" id="heroFormula">Select dice below and click ROLL</div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-right">
+          <div class="hero-total" id="heroTotal">--</div>
+        </div>
+      </div>
+
+      <!-- Crit Announcement -->
+      <div class="crit-strip" id="critStrip"></div>
+
+      <!-- 2D Dice Result Grid & Reroll Toolbar -->
+      <div class="dice-results-wrap" id="diceResultsWrap">
+        <div class="dice-results-head">
+          <span id="themeTitle">Icewind Dale: Rime of the Frostmaiden</span>
+          <div class="reroll-tools">
+            <button class="reroll-pill-btn" onclick="rerollLowDice()" title="Reroll all dice that rolled 1 or 2 (Great Weapon Fighting / Elemental Adept)">
+              <span>⚡</span> Reroll 1s & 2s
+            </button>
+            <button class="reroll-pill-btn" onclick="rerollAllDice()" title="Reroll all dice in this roll">
+              <span>🔄</span> Reroll All
+            </button>
+          </div>
+        </div>
+        <div class="dice-results-grid" id="diceResultsGrid"></div>
+      </div>
+
+      <!-- Slim Dice Skin Bar -->
+      <div class="skin-row">
+        <div class="skin-left">
+          <div class="skin-cube-icon skin-icewind" id="skinCube">🧊</div>
+          <span class="skin-label-title" id="skinTitle">Icewind Dale: Rime of...</span>
+        </div>
+        <select class="skin-dropdown" id="themeDropdown" onchange="changeTheme(this.value)">
+          <option value="icewind">Icewind Dale</option>
+          <option value="dragon">Dragon Fire</option>
+          <option value="shadow">Shadowfell</option>
+          <option value="emerald">Emerald Grove</option>
+        </select>
+      </div>
+
+      <!-- Dice Selection Grid -->
+      <div class="dice-card-box">
+        <!-- Row 1: d20, d12, d100, d10 -->
+        <div class="dice-row-4">
+          <!-- d20 -->
+          <div class="die-slot" data-die="d20" onclick="addDie('d20')" oncontextmenu="subDie('d20', event)">
+            <span class="die-count-badge" id="badge_d20">1</span>
+            <svg class="die-icon-svg" viewBox="0 0 100 100">
+              <polygon points="50,5 88,28 50,45" fill="#38bdf8" opacity="0.9" stroke="#7dd3fc" stroke-width="2" />
+              <polygon points="50,5 12,28 50,45" fill="#0284c7" opacity="0.85" stroke="#7dd3fc" stroke-width="2" />
+              <polygon points="12,28 50,45 25,78" fill="#0369a1" opacity="0.75" stroke="#7dd3fc" stroke-width="2" />
+              <polygon points="88,28 50,45 75,78" fill="#0ea5e9" opacity="0.8" stroke="#7dd3fc" stroke-width="2" />
+              <polygon points="50,45 25,78 75,78" fill="#38bdf8" opacity="0.95" stroke="#7dd3fc" stroke-width="2" />
+              <polygon points="25,78 75,78 50,95" fill="#0284c7" opacity="0.7" stroke="#7dd3fc" stroke-width="2" />
+              <polygon points="12,28 25,78 5,55" fill="#075985" opacity="0.65" stroke="#7dd3fc" stroke-width="2" />
+              <polygon points="88,28 75,78 95,55" fill="#0369a1" opacity="0.7" stroke="#7dd3fc" stroke-width="2" />
+              <text x="50" y="65" font-size="16" font-weight="900" fill="#ffffff" text-anchor="middle">20</text>
+            </svg>
+            <span class="die-name">d20</span>
+          </div>
+
+          <!-- d12 -->
+          <div class="die-slot" data-die="d12" onclick="addDie('d12')" oncontextmenu="subDie('d12', event)">
+            <span class="die-count-badge" id="badge_d12">1</span>
+            <svg class="die-icon-svg" viewBox="0 0 100 100">
+              <polygon points="50,22 74,39 65,68 35,68 26,39" fill="#c084fc" opacity="0.95" stroke="#e9d5ff" stroke-width="2" />
+              <polygon points="50,22 74,39 90,26 65,6 50,6" fill="#a855f7" opacity="0.75" stroke="#e9d5ff" stroke-width="2" />
+              <polygon points="74,39 65,68 92,72 95,48 90,26" fill="#7e22ce" opacity="0.7" stroke="#e9d5ff" stroke-width="2" />
+              <polygon points="65,68 35,68 50,94 78,92 92,72" fill="#6b21a8" opacity="0.8" stroke="#e9d5ff" stroke-width="2" />
+              <polygon points="35,68 26,39 8,48 10,72 50,94" fill="#9333ea" opacity="0.85" stroke="#e9d5ff" stroke-width="2" />
+              <polygon points="26,39 50,22 50,6 35,6 10,26" fill="#c084fc" opacity="0.8" stroke="#e9d5ff" stroke-width="2" />
+              <text x="50" y="52" font-size="17" font-weight="900" fill="#ffffff" text-anchor="middle">12</text>
+            </svg>
+            <span class="die-name">d12</span>
+          </div>
+
+          <!-- d100 -->
+          <div class="die-slot" data-die="d100" onclick="addDie('d100')" oncontextmenu="subDie('d100', event)">
+            <span class="die-count-badge" id="badge_d100">1</span>
+            <svg class="die-icon-svg" viewBox="0 0 100 100">
+              <polygon points="36,12 60,38 36,86 12,38" fill="#14b8a6" opacity="0.85" stroke="#99f6e4" stroke-width="2" />
+              <polygon points="36,12 60,38 36,48" fill="#2dd4bf" opacity="0.95" stroke="#99f6e4" stroke-width="2" />
+              <polygon points="64,24 88,48 64,88 44,52" fill="#2dd4bf" opacity="0.9" stroke="#ccfbf1" stroke-width="2" />
+              <polygon points="64,24 88,48 64,56" fill="#5eead4" opacity="0.95" stroke="#ccfbf1" stroke-width="2" />
+              <text x="36" y="52" font-size="11" font-weight="900" fill="#ffffff" text-anchor="middle">00</text>
+              <text x="64" y="60" font-size="11" font-weight="900" fill="#ffffff" text-anchor="middle">0</text>
+            </svg>
+            <span class="die-name">d100</span>
+          </div>
+
+          <!-- d10 -->
+          <div class="die-slot" data-die="d10" onclick="addDie('d10')" oncontextmenu="subDie('d10', event)">
+            <span class="die-count-badge" id="badge_d10">1</span>
+            <svg class="die-icon-svg" viewBox="0 0 100 100">
+              <polygon points="50,10 84,40 50,92 16,40" fill="#059669" opacity="0.85" stroke="#a7f3d0" stroke-width="2" />
+              <polygon points="50,10 84,40 50,52" fill="#34d399" opacity="0.95" stroke="#a7f3d0" stroke-width="2" />
+              <polygon points="50,10 16,40 50,52" fill="#10b981" opacity="0.8" stroke="#a7f3d0" stroke-width="2" />
+              <polygon points="16,40 50,92 50,52" fill="#047857" opacity="0.75" stroke="#a7f3d0" stroke-width="2" />
+              <polygon points="84,40 50,92 50,52" fill="#059669" opacity="0.9" stroke="#a7f3d0" stroke-width="2" />
+              <text x="50" y="62" font-size="16" font-weight="900" fill="#ffffff" text-anchor="middle">10</text>
+            </svg>
+            <span class="die-name">d10</span>
+          </div>
+        </div>
+
+        <!-- Row 2: d8, d6, d4 -->
+        <div class="dice-row-3">
+          <!-- d8 -->
+          <div class="die-slot" data-die="d8" onclick="addDie('d8')" oncontextmenu="subDie('d8', event)">
+            <span class="die-count-badge" id="badge_d8">1</span>
+            <svg class="die-icon-svg" viewBox="0 0 100 100">
+              <polygon points="50,12 86,50 50,88 14,50" fill="#d97706" opacity="0.85" stroke="#fde68a" stroke-width="2" />
+              <polygon points="50,12 86,50 50,50" fill="#fbbf24" opacity="0.95" stroke="#fde68a" stroke-width="2" />
+              <polygon points="50,12 14,50 50,50" fill="#f59e0b" opacity="0.85" stroke="#fde68a" stroke-width="2" />
+              <polygon points="14,50 50,88 50,50" fill="#b45309" opacity="0.75" stroke="#fde68a" stroke-width="2" />
+              <polygon points="86,50 50,88 50,50" fill="#d97706" opacity="0.9" stroke="#fde68a" stroke-width="2" />
+              <text x="50" y="58" font-size="16" font-weight="900" fill="#ffffff" text-anchor="middle">8</text>
+            </svg>
+            <span class="die-name">d8</span>
+          </div>
+
+          <!-- d6 -->
+          <div class="die-slot" data-die="d6" onclick="addDie('d6')" oncontextmenu="subDie('d6', event)">
+            <span class="die-count-badge" id="badge_d6">1</span>
+            <svg class="die-icon-svg" viewBox="0 0 100 100">
+              <polygon points="50,16 82,32 50,48 18,32" fill="#f87171" opacity="0.95" stroke="#fecaca" stroke-width="2" />
+              <polygon points="18,32 50,48 50,84 18,68" fill="#dc2626" opacity="0.85" stroke="#fecaca" stroke-width="2" />
+              <polygon points="50,48 82,32 82,68 50,84" fill="#b91c1c" opacity="0.9" stroke="#fecaca" stroke-width="2" />
+              <text x="50" y="64" font-size="16" font-weight="900" fill="#ffffff" text-anchor="middle">6</text>
+            </svg>
+            <span class="die-name">d6</span>
+          </div>
+
+          <!-- d4 -->
+          <div class="die-slot" data-die="d4" onclick="addDie('d4')" oncontextmenu="subDie('d4', event)">
+            <span class="die-count-badge" id="badge_d4">1</span>
+            <svg class="die-icon-svg" viewBox="0 0 100 100">
+              <polygon points="50,16 86,78 14,78" fill="#db2777" opacity="0.8" stroke="#fbcfe8" stroke-width="2" />
+              <polygon points="50,16 50,56 14,78" fill="#f472b6" opacity="0.95" stroke="#fbcfe8" stroke-width="2" />
+              <polygon points="50,16 50,56 86,78" fill="#ec4899" opacity="0.85" stroke="#fbcfe8" stroke-width="2" />
+              <text x="50" y="68" font-size="16" font-weight="900" fill="#ffffff" text-anchor="middle">4</text>
+            </svg>
+            <span class="die-name">d4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advantage / Disadvantage & Modifier Row -->
+      <div class="adv-mod-bar">
+        <div class="mode-group">
+          <button class="mode-tab active" id="btnNorm" onclick="setRollMode('normal')">Normal</button>
+          <button class="mode-tab" id="btnAdv" onclick="setRollMode('adv')">Adv</button>
+          <button class="mode-tab" id="btnDis" onclick="setRollMode('dis')">Disadv</button>
+        </div>
+
+        <div class="mod-stepper">
+          <span class="mod-tag">Mod:</span>
+          <button class="step-btn" onclick="changeMod(-1)">−</button>
+          <span class="mod-num" id="modDisplay">+0</span>
+          <button class="step-btn" onclick="changeMod(1)">+</button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-bar">
+        <button class="reset-btn" onclick="resetSelection()" title="Reset selected dice pool, modifier, and roll mode">RESET</button>
+        <button class="roll-btn" onclick="rollDice()">ROLL</button>
+      </div>
+
+      <div class="clear-link" onclick="clearDice()" title="Clear all rolled dice, formula, and total from display">CLEAR DICE</div>
+
+    </div>
+
+    <!-- PAGE 2: HISTORY -->
+    <div class="tab-page" id="pageHistory">
+      <div class="history-card">
+        <div class="hist-head">
+          <span class="hist-title">Roll History Log</span>
+          <button class="hist-clear" onclick="clearHistory()">Clear</button>
+        </div>
+        <div class="hist-list" id="histList"></div>
+      </div>
+    </div>
+
+    <!-- PAGE 3: COMBO & MACRO VAULT -->
+    <div class="tab-page" id="pagePresets">
+      <div class="macro-vault-card">
+        <!-- Header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:6px;">
+          <div style="font-size:12px;font-weight:800;color:var(--gold);display:flex;align-items:center;gap:6px;">
+            <span>⚔️</span>
+            <span>Combo & Dice Macro Vault</span>
+          </div>
+          <span style="font-size:9.5px;color:var(--text-dim);">1-Click Multi-Dice Roll</span>
+        </div>
+
+        <!-- Custom Macro Builder Form -->
+        <div class="macro-builder-box">
+          <div style="font-size:10.5px;font-weight:700;color:#c084fc;">➕ Buat Kombo Dadu Kustom</div>
+          <div style="display:flex;gap:4px;">
+            <input type="text" id="macroNameInput" class="combat-input" placeholder="Nama Kombo (misal: Divine Smite)" style="flex:1;" />
+            <input type="text" id="macroFormulaInput" class="combat-input" placeholder="Rumus (misal: 2d8+3d6+5)" style="flex:1;" />
+          </div>
+          <div style="display:flex;gap:4px;align-items:center;justify-content:space-between;">
+            <select id="macroTagInput" class="combat-input" style="flex:1;cursor:pointer;">
+              <option value="atk">⚔️ Attack</option>
+              <option value="dmg" selected>💥 Damage</option>
+              <option value="spell">🔮 Spell</option>
+              <option value="heal">✨ Healing</option>
+            </select>
+            <button class="combat-btn gold" onclick="saveCustomMacro()" style="padding:4px 10px;">+ Simpan Macro</button>
+          </div>
+        </div>
+
+        <!-- Signature Malexius Combos -->
+        <div style="font-size:10px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">
+          ⚡ Malexius Signature Combos
+        </div>
+        <div class="macro-item-card" onclick="executeAIRoll('2d12 + 2d8 + 6d10 + 12')">
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="macro-tag dmg">Damage</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">💥 Vesper Overcharged Burst</span>
+            </div>
+            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">1 Charge Reaktor: Base + Force Bypass Resistance</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">2d12+2d8+6d10+12</span>
+            <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
+          </div>
+        </div>
+
+        <div class="macro-item-card" onclick="executeAIRoll('10d10 + 9d6')">
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="macro-tag dmg">Damage</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">🩸 Reaper Tithe + Sneak Attack</span>
+            </div>
+            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">2 Charges Soul Fuel + Rogue 17 Sneak Attack</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">10d10+9d6</span>
+            <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
+          </div>
+        </div>
+
+        <div class="macro-item-card" onclick="executeAIRoll('8d10 + 12d8 + 48')">
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="macro-tag atk">Slayer</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">👹 4x Slayer Claws Full Burst</span>
+            </div>
+            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">Multiattack 4x Cakar Slayer Wujud Monster</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">8d10+12d8+48</span>
+            <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
+          </div>
+        </div>
+
+        <div class="macro-item-card" onclick="executeAIRoll('3d10')">
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="macro-tag spell">Reaction</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">🛡️ Aegis Shield Slam</span>
+            </div>
+            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">DC 24 STR Save: 3d10 Force + Prone 10 ft</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">3d10</span>
+            <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
+          </div>
+        </div>
+
+        <div class="macro-item-card" onclick="executeAIRoll('10d6')">
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="macro-tag spell">Spell</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">🔥 Fireball (Slot Level 5)</span>
+            </div>
+            <div style="font-size:9px;color:var(--text-dim);margin-top:2px;">Area of Effect Fire Damage DC 21 DEX</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">10d6</span>
+            <button class="combat-btn gold" style="padding:2px 6px;">🎲 Roll</button>
+          </div>
+        </div>
+
+        <!-- Custom User Macros List -->
+        <div style="font-size:10px;font-weight:800;color:#c084fc;text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;">
+          📂 Makro Kustom Kamu
+        </div>
+        <div id="userMacrosList" style="display:flex;flex-direction:column;gap:5px;"></div>
+      </div>
+    </div>
+
+    <!-- PAGE 4: CHARACTER SHEET -->
+    <div class="tab-page" id="pageMalexius">
+
+      <!-- Character Switcher & Import Header -->
+      <div class="char-manager-bar">
+        <div class="char-selector-wrap">
+          <span style="font-size: 13px;">🎭</span>
+          <select id="charSelector" class="char-dropdown" onchange="onSelectCharacter(this.value)">
+            <option value="malexius">🩸 Malexius, The One Who Defied Fate (Lv 20)</option>
+          </select>
+        </div>
+        <div class="char-actions-wrap">
+          <button class="char-action-btn import" onclick="openImportModal()" title="Import Sheet Baru (.pdf, .txt, .md)">
+            <span>➕ Import Sheet</span>
+          </button>
+          <button class="char-action-btn del" id="btnDeleteChar" onclick="deleteCurrentCharacter()" title="Hapus Karakter Kustom Ini" style="display:none;">
+            <span>🗑️</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Built-in Malexius View -->
+      <div id="malexiusBuiltinView" style="display: flex; flex-direction: column; gap: 8px;">
+
+        <!-- Character Card -->
+        <div class="mal-card">
+          <div class="mal-header">
+            <div class="mal-name-hero">
+              <span>🩸</span> MALEXIUS, THE ONE WHO DEFIED FATE
+            </div>
+          <div class="mal-sub-hero">
+            Level 20 Multiclass • Rogue 17 (Thief) / Fighter 2 / Wizard 1<br/>
+            Drow Elf • Chaotic Evil • Warisan Bhaalspawn (Chosen of Bhaal)
+          </div>
+          <div class="mal-badges-row">
+            <span class="mal-badge gold">PB +7</span>
+            <span class="mal-badge">Bhaal DC 25</span>
+            <span class="mal-badge cyan">Spell DC 20</span>
+            <span class="mal-badge purple">Inspiration 1/1</span>
+            <span class="mal-badge gold">Reliable Talent (Min 10)</span>
+          </div>
+        </div>
+
+        <!-- Vitals Grid -->
+        <div class="mal-vitals-grid">
+          <div class="mal-vital-box" title="Max HP 177 / Current HP 177">
+            <span class="mal-vital-label">HP</span>
+            <span class="mal-vital-val hp">177/177</span>
+          </div>
+          <div class="mal-vital-box" title="Temporary HP (Max 30, Regen 1d6/turn)">
+            <span class="mal-vital-label">Temp HP</span>
+            <span class="mal-vital-val thp">+30</span>
+          </div>
+          <div class="mal-vital-box" title="Mode Aegis Shield: AC 36 / Mode 2H Vesper's: AC 31">
+            <span class="mal-vital-label">AC</span>
+            <span class="mal-vital-val ac">36 / 31</span>
+          </div>
+          <div class="mal-vital-box" style="cursor:pointer;" onclick="rollMalexiusAction('Initiative Check', {d20: 1}, 16)" title="Klik untuk Roll Initiative (DEX +9 + PB +7 Alert)">
+            <span class="mal-vital-label">Init ⚡</span>
+            <span class="mal-vital-val init">+16</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ability Scores & Saves -->
+      <div class="mal-card">
+        <div class="mal-section-title">📊 Ability Scores & Saving Throws (Click to Roll)</div>
+        <div class="mal-stats-grid">
+          <!-- STR -->
+          <div class="mal-stat-col">
+            <span class="mal-stat-name">STR</span>
+            <span class="mal-stat-mod">+5</span>
+            <span class="mal-stat-score">20</span>
+            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('STR Check', {d20: 1}, 5)" title="STR Check (+5)">+5</button>
+            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('STR Save', {d20: 1}, 6)" title="STR Save (+6)">Sv +6</button>
+          </div>
+          <!-- DEX -->
+          <div class="mal-stat-col" style="border-color: rgba(239, 68, 68, 0.4);">
+            <span class="mal-stat-name" style="color:#ef4444;">DEX</span>
+            <span class="mal-stat-mod" style="color:#f87171;">+9</span>
+            <span class="mal-stat-score">28</span>
+            <button class="mal-stat-roll-btn prof" onclick="rollMalexiusAction('DEX Check', {d20: 1}, 9)" title="DEX Check (+9)">+9</button>
+            <button class="mal-stat-roll-btn prof" onclick="rollMalexiusAction('DEX Save [Adv]', {d20: 1}, 17, 'adv')" title="DEX Save Proficient +17 [Advantage, Evasion]">Sv +17*</button>
+          </div>
+          <!-- CON -->
+          <div class="mal-stat-col">
+            <span class="mal-stat-name">CON</span>
+            <span class="mal-stat-mod">+5</span>
+            <span class="mal-stat-score">20</span>
+            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('CON Check', {d20: 1}, 5)" title="CON Check (+5)">+5</button>
+            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('CON Save', {d20: 1}, 6)" title="CON Save (+6)">Sv +6</button>
+          </div>
+          <!-- INT -->
+          <div class="mal-stat-col">
+            <span class="mal-stat-name">INT</span>
+            <span class="mal-stat-mod">+5</span>
+            <span class="mal-stat-score">20</span>
+            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('INT Check', {d20: 1}, 5)" title="INT Check (+5)">+5</button>
+            <button class="mal-stat-roll-btn prof" onclick="rollMalexiusAction('INT Save', {d20: 1}, 13)" title="INT Save Proficient (+13)">Sv +13*</button>
+          </div>
+          <!-- WIS -->
+          <div class="mal-stat-col">
+            <span class="mal-stat-name">WIS</span>
+            <span class="mal-stat-mod">+5</span>
+            <span class="mal-stat-score">20</span>
+            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('WIS Check', {d20: 1}, 5)" title="WIS Check (+5)">+5</button>
+            <button class="mal-stat-roll-btn prof" onclick="rollMalexiusAction('WIS Save', {d20: 1}, 13)" title="WIS Save Proficient Slippery Mind (+13)">Sv +13*</button>
+          </div>
+          <!-- CHA -->
+          <div class="mal-stat-col">
+            <span class="mal-stat-name">CHA</span>
+            <span class="mal-stat-mod">+6</span>
+            <span class="mal-stat-score">23</span>
+            <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('CHA Check', {d20: 1}, 6)" title="CHA Check (+6)">+6</button>
+            <button class="mal-stat-roll-btn prof" onclick="rollMalexiusAction('CHA Save [Adv]', {d20: 1}, 14, 'adv')" title="CHA Save Proficient Slippery Mind (+14) [Adv vs Charmed]">Sv +14*</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attacks & Weapons -->
+      <div class="mal-card">
+        <div class="mal-section-title">⚔️ Combat Attacks & Arsenal (One-Click Roll)</div>
+
+        <!-- Vesper's Laras Utama -->
+        <div class="mal-atk-card">
+          <div class="mal-atk-top">
+            <span class="mal-atk-name">🔭 Vesper's Last Horizon (Laras Utama)</span>
+            <span class="mal-atk-meta">Range 300/1200 ft • Mechanus Core</span>
+          </div>
+          <div style="font-size: 9.5px; color: var(--text-muted);">
+            Hit: <b style="color:#ef4444;">+19</b> | Base Dmg: <b>2d12+12</b> Piercing + <b>2d8</b> Radiant Laser
+          </div>
+          <div class="mal-atk-btns">
+            <button class="mal-act-btn atk" onclick="rollMalexiusAction('Vesper Attack', {d20: 1}, 19)">🎯 Serang (+19)</button>
+            <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Vesper Base Dmg', {d12: 2, d8: 2}, 12)">💥 Base (2d12+2d8+12)</button>
+            <button class="mal-act-btn special" onclick="rollMalexiusAction('Vesper Overcharged Rail-Shot', {d12: 2, d8: 2, d10: 6}, 12)" title="1 Charge Reaktor: +6d10 Force bypass Resistance/Immunity, STR DC 21 or Prone">⚡ Rail-Shot (+6d10 Force)</button>
+            <button class="mal-act-btn special" onclick="rollMalexiusAction('Vesper Null-Bane Slug', {d12: 2, d8: 5}, 12)" title="Peluru Khusus: +3d8 Psychic, Disadv Conc Save, segel planar">🟣 Null-Bane (+3d8 Psy)</button>
+          </div>
+        </div>
+
+        <!-- Vesper's Laser Bayonet -->
+        <div class="mal-atk-card">
+          <div class="mal-atk-top">
+            <span class="mal-atk-name">🗡️ Vesper's Laser-Bayonet (Adamantine Melee)</span>
+            <span class="mal-atk-meta">Reach 5 ft • Finesse • Vex</span>
+          </div>
+          <div style="font-size: 9.5px; color: var(--text-muted);">
+            Hit: <b style="color:#ef4444;">+19</b> | Dmg: <b>1d8+12</b> Slashing + <b>2d8</b> Radiant Laser
+          </div>
+          <div class="mal-atk-btns">
+            <button class="mal-act-btn atk" onclick="rollMalexiusAction('Bayonet Attack', {d20: 1}, 19)">⚔️ Serang (+19)</button>
+            <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Bayonet Base Dmg', {d8: 3}, 12)">💥 Base (1d8+2d8+12)</button>
+            <button class="mal-act-btn special" onclick="rollMalexiusAction('Bayonet + Sneak + Infernal', {d8: 3, d6: 12}, 12)" title="Bayonet + Sneak Attack 9d6 + Infernal Slaughter 3d6">🩸 Full Strike (+9d6+3d6)</button>
+            <button class="mal-act-btn special" onclick="rollMalexiusAction('Booming Blade Bayonet', {d8: 6}, 12)" title="Booming Blade: +3d8 Thunder saat hit (+4d8 jika musuh bergerak)">⚡ Booming (+3d8)</button>
+          </div>
+        </div>
+
+        <!-- Vesper's Breacher -->
+        <div class="mal-atk-card">
+          <div class="mal-atk-top">
+            <span class="mal-atk-name">🌌 Grav-Photon Breacher (Underbarrel)</span>
+            <span class="mal-atk-meta">30 ft Cone • Bonus Action</span>
+          </div>
+          <div style="font-size: 9.5px; color: var(--text-muted);">
+            Area Cone 30 ft | DC 21 STR Save or <b>6d8 Force+Radiant</b> + terdorong 15 ft + Prone!
+          </div>
+          <div class="mal-atk-btns">
+            <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Grav-Photon Breacher', {d8: 6}, 0)">🌌 Breacher Blast (6d8)</button>
+          </div>
+        </div>
+
+        <!-- Silent Tithe -->
+        <div class="mal-atk-card">
+          <div class="mal-atk-top">
+            <span class="mal-atk-name">🗡️ Silent Tithe (Shortsword +3)</span>
+            <span class="mal-atk-meta">Reach 5 ft • Finesse • Light</span>
+          </div>
+          <div style="font-size: 9.5px; color: var(--text-muted);">
+            Hit: <b style="color:#ef4444;">+19</b> | Dmg: <b>1d6+12</b> Piercing + <b>2d8</b> Necrotic (Crit: +6d8 Necrotic!)
+          </div>
+          <div class="mal-atk-btns">
+            <button class="mal-act-btn atk" onclick="rollMalexiusAction('Silent Tithe Attack', {d20: 1}, 19)">🗡️ Serang (+19)</button>
+            <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Silent Tithe Base Dmg', {d6: 1, d8: 2}, 12)">💥 Base (1d6+2d8+12)</button>
+            <button class="mal-act-btn special" onclick="rollMalexiusAction('Silent Tithe + Sneak', {d6: 10, d8: 2}, 12)">💀 Tithe + Sneak (10d6+2d8)</button>
+            <button class="mal-act-btn special" onclick="rollMalexiusAction('Reaper Tithe (+10d10 Necrotic)', {d10: 10}, 0)" title="2 Charges: CON Save DC 25 or +10d10 Necrotic Dmg">☠️ Reaper's Tithe (10d10)</button>
+          </div>
+        </div>
+
+        <!-- Class Powers & Bhaal Blessings -->
+        <div class="mal-atk-card">
+          <div class="mal-atk-top">
+            <span class="mal-atk-name">🩸 Class Powers & Bhaal Gifts</span>
+            <span class="mal-atk-meta">Reliable Sneak & Siphon</span>
+          </div>
+          <div class="mal-atk-btns">
+            <button class="mal-act-btn special" onclick="rollMalexiusAction('Sneak Attack (Rogue 17)', {d6: 9}, 0)" title="Sneak Attack 9d6 (reroll 1s & 2s pada crit)">🩸 Sneak Attack (9d6)</button>
+            <button class="mal-act-btn special" onclick="rollMalexiusAction('Infernal Slaughter (Bhaal)', {d6: 3}, 0)" title="+3d6 Necrotic/Fire, pulihkan HP 1/2 total damage (kelebihan jadi Temp HP)">🔥 Infernal Slaughter (3d6)</button>
+            <button class="mal-act-btn special" onclick="rollMalexiusAction('Amulet of Bhaal: First Blood', {d8: 4}, 0)" title="+4d8 Necrotic ke musuh ber-HP penuh, pendarahan 2d10/turn">💀 First Blood (4d8)</button>
+            <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Aegis Shield Slam', {d10: 3}, 0)" title="DC 24 STR Save: 3d10 Force + Prone + terdorong 10 ft">🛡️ Shield Slam (3d10)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills & Reliable Talent -->
+      <div class="mal-card">
+        <div class="mal-section-title">🎯 Skills & Reliable Talent (Min d20 = 10)</div>
+        <div class="mal-skills-list">
+          <div class="mal-skill-row" onclick="rollMalexiusAction('Sleight of Hand (Reliable min 38)', {d20: 1}, 28)" title="Double PB + DEX + Gloves of Thievery = +28 (Min roll 38)">
+            <span class="mal-skill-name">Sleight of Hand [E]</span>
+            <span class="mal-skill-mod">+28</span>
+          </div>
+          <div class="mal-skill-row" onclick="rollMalexiusAction('Stealth [Adv] (Reliable min 33)', {d20: 1}, 23, 'adv')" title="Double PB + DEX + Boots of Elvenkind [Adv] = +23 (Min roll 33)">
+            <span class="mal-skill-name">Stealth [E, Adv]</span>
+            <span class="mal-skill-mod">+23</span>
+          </div>
+          <div class="mal-skill-row" onclick="rollMalexiusAction('Intimidation [Adv] (Reliable min 30)', {d20: 1}, 20, 'adv')" title="Double PB + CHA + Sovereign Veil [Adv] = +20 (Min roll 30)">
+            <span class="mal-skill-name">Intimidation [E, Adv]</span>
+            <span class="mal-skill-mod">+20</span>
+          </div>
+          <div class="mal-skill-row" onclick="rollMalexiusAction('Investigation (Reliable min 29)', {d20: 1}, 19)" title="Double PB + INT = +19 (Min roll 29)">
+            <span class="mal-skill-name">Investigation [E]</span>
+            <span class="mal-skill-mod">+19</span>
+          </div>
+          <div class="mal-skill-row" onclick="rollMalexiusAction('Perception (Reliable min 29)', {d20: 1}, 19)" title="Double PB + WIS = +19 (Passive 29, Min roll 29)">
+            <span class="mal-skill-name">Perception [E]</span>
+            <span class="mal-skill-mod">+19</span>
+          </div>
+          <div class="mal-skill-row" onclick="rollMalexiusAction('Deception [Adv] (Reliable min 23)', {d20: 1}, 13, 'adv')" title="PB + CHA + Sovereign Veil [Adv] = +13 (Min roll 23)">
+            <span class="mal-skill-name">Deception [*Adv]</span>
+            <span class="mal-skill-mod">+13</span>
+          </div>
+          <div class="mal-skill-row" onclick="rollMalexiusAction('Insight (Reliable min 22)', {d20: 1}, 12)" title="PB + WIS = +12 (Passive 22, Min roll 22)">
+            <span class="mal-skill-name">Insight [*]</span>
+            <span class="mal-skill-mod">+12</span>
+          </div>
+          <div class="mal-skill-row" onclick="rollMalexiusAction('Acrobatics', {d20: 1}, 9)" title="Pure DEX Mod = +9 (Tanpa Reliable Talent)">
+            <span class="mal-skill-name">Acrobatics</span>
+            <span class="mal-skill-mod">+9</span>
+          </div>
+          <div class="mal-skill-row" onclick="rollMalexiusAction('Athletics', {d20: 1}, 5)" title="Pure STR Mod = +5 (Tanpa Reliable Talent)">
+            <span class="mal-skill-name">Athletics</span>
+            <span class="mal-skill-mod">+5</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resource Trackers -->
+      <div class="mal-card">
+        <div class="mal-section-title">⚡ Interactive Resource Trackers</div>
+        <div class="mal-trackers-grid">
+          <div class="mal-track-box">
+            <span class="mal-track-label">Action Surge</span>
+            <div class="mal-track-ctrl">
+              <span class="mal-track-val" id="trkActionSurge">1/1</span>
+              <button class="mal-track-btn" onclick="toggleTracker('trkActionSurge', 1)">✓</button>
+            </div>
+          </div>
+          <div class="mal-track-box">
+            <span class="mal-track-label">Second Wind (1d10+2)</span>
+            <div class="mal-track-ctrl">
+              <span class="mal-track-val" id="trkSecondWind">2/2</span>
+              <button class="mal-track-btn" onclick="stepTracker('trkSecondWind', -1, 0, 2); rollMalexiusAction('Second Wind Healing', {d10: 1}, 2);">🎲</button>
+            </div>
+          </div>
+          <div class="mal-track-box">
+            <span class="mal-track-label">Spell Slots (Lv 1)</span>
+            <div class="mal-track-ctrl">
+              <span class="mal-track-val" id="trkSpellSlots">1/2</span>
+              <button class="mal-track-btn" onclick="stepTracker('trkSpellSlots', -1, 0, 2)">-</button>
+              <button class="mal-track-btn" onclick="stepTracker('trkSpellSlots', 1, 0, 2)">+</button>
+            </div>
+          </div>
+          <div class="mal-track-box">
+            <span class="mal-track-label">Vesper's Reactor</span>
+            <div class="mal-track-ctrl">
+              <span class="mal-track-val" id="trkVesper">4/5</span>
+              <button class="mal-track-btn" onclick="stepTracker('trkVesper', -1, 0, 5)">-</button>
+              <button class="mal-track-btn" onclick="stepTracker('trkVesper', 1, 0, 5)">+</button>
+            </div>
+          </div>
+          <div class="mal-track-box">
+            <span class="mal-track-label">Silent Tithe</span>
+            <div class="mal-track-ctrl">
+              <span class="mal-track-val" id="trkTithe">3/3</span>
+              <button class="mal-track-btn" onclick="stepTracker('trkTithe', -1, 0, 3)">-</button>
+              <button class="mal-track-btn" onclick="stepTracker('trkTithe', 1, 0, 3)">+</button>
+            </div>
+          </div>
+          <div class="mal-track-box">
+            <span class="mal-track-label">Chronos-Null Singularity</span>
+            <div class="mal-track-ctrl">
+              <span class="mal-track-val" id="trkChronos">3/3</span>
+              <button class="mal-track-btn" onclick="stepTracker('trkChronos', -1, 0, 3)">-</button>
+              <button class="mal-track-btn" onclick="stepTracker('trkChronos', 1, 0, 3)">+</button>
+            </div>
+          </div>
+          <div class="mal-track-box">
+            <span class="mal-track-label">Null-Bane Slugs</span>
+            <div class="mal-track-ctrl">
+              <span class="mal-track-val" id="trkSlugs">2/6</span>
+              <button class="mal-track-btn" onclick="stepTracker('trkSlugs', -1, 0, 6)">-</button>
+              <button class="mal-track-btn" onclick="stepTracker('trkSlugs', 1, 0, 6)">+</button>
+            </div>
+          </div>
+          <div class="mal-track-box">
+            <span class="mal-track-label">Potion of Speed</span>
+            <div class="mal-track-ctrl">
+              <span class="mal-track-val" id="trkSpeed">8/10</span>
+              <button class="mal-track-btn" onclick="stepTracker('trkSpeed', -1, 0, 10)">-</button>
+              <button class="mal-track-btn" onclick="stepTracker('trkSpeed', 1, 0, 10)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- The Slayer Form & Epic Boons -->
+      <div class="mal-card" style="border-color: rgba(239, 68, 68, 0.45); background: linear-gradient(180deg, rgba(239,68,68,0.06) 0%, rgba(0,0,0,0.3) 100%);">
+        <div class="mal-section-title" style="color:#ef4444;">
+          <span>👹</span> THE SLAYER FORM (CHOSEN OF BHAAL)
+        </div>
+        <div style="font-size: 10px; color: var(--text-muted); line-height: 1.4;">
+          Wujud Pembantai Bhaal • 1/Long Rest • <b>+150 Temp HP</b> • Size Large • Speed +20 ft • Truesight 120 ft • Magic Resistance (Adv saves vs spells).
+        </div>
+        <div class="mal-atk-btns">
+          <button class="mal-act-btn atk" onclick="rollMalexiusAction('Slayer Claw Attack', {d20: 1}, 20)">👹 Cakar Slayer (+20 to hit)</button>
+          <button class="mal-act-btn dmg" onclick="rollMalexiusAction('Slayer Claw Damage', {d10: 2, d8: 3}, 12)">💥 Dmg Cakar (2d10+3d8+12)</button>
+          <button class="mal-act-btn special" onclick="rollMalexiusAction('4x Slayer Claws Full Burst', {d10: 8, d8: 12}, 48)">🔥 4x Claws Full Multiattack (8d10+12d8+48)</button>
+        </div>
+      </div>
+
+      <!-- Attunements & Wealth -->
+      <div class="mal-card">
+        <div class="mal-section-title">👑 Attunements (4/4) & Kekayaan</div>
+        <div style="font-size: 10px; color: var(--text-muted); display:flex; flex-direction:column; gap:3px;">
+          <div><b>1. The Sovereign's Veil</b> — Truesight 60 ft, +2 CHA (maks 24), kebal baca pikiran.</div>
+          <div><b>2. The Chronos-Null Singularity</b> — +1 AC, +1 Saves, Regen 1d6 HP/turn, Symbiotic Focus.</div>
+          <div><b>3. Amulet of Bhaal</b> — First Blood (+4d8 Necrotic + 2d10/turn bleed), Segel I unlocked.</div>
+          <div><b>4. Deathstalker Mantle</b> — Kill CR 1+ memberi Greater Invisibility 1 turn, Segel II unlocked.</div>
+        </div>
+        <div class="mal-info-row">
+          <span>Kekayaan Bersih (Lunas):</span>
+          <span class="mal-info-highlight">💰 570.200 GP (43.200 Tunai + 527.000 Brankas)</span>
+        </div>
+      </div>
+      </div><!-- End malexiusBuiltinView -->
+
+      <!-- Dynamic Custom Character View -->
+      <div id="customCharView" style="display: none; flex-direction: column; gap: 8px;"></div>
+
+    </div>
+
+    <!-- PAGE 5: AI COMPANION & RULES ORACLE -->
+    <div class="tab-page" id="pageAI">
+      <div class="ai-card">
+        <div class="ai-header">
+          <div class="ai-title">
+            <span>🔮</span>
+            <span>Malexius Companion AI</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <div class="ai-status-badge">
+              <span style="font-size: 8px;">●</span> Gemini AI
+            </div>
+            <button class="mal-ctrl-btn" onclick="clearAIChat()" title="Bersihkan riwayat percakapan">🗑️</button>
+          </div>
+        </div>
+
+        <!-- Suggestion Chips -->
+        <div class="ai-chips-wrap">
+          <div class="ai-chip" onclick="askAINarration()">⚔️ Narasi Serangan Terakhir</div>
+          <div class="ai-chip" onclick="setAIPrompt('Jelaskan aturan Grapple & Shove di D&D 5e secara ringkas.')">📖 Aturan Grappling 5e</div>
+          <div class="ai-chip" onclick="setAIPrompt('Bagaimana strategi memaksimalkan Sneak Attack, Action Surge, dan Vesper dalam 1 ronde?')">🩸 Taktik Malexius</div>
+          <div class="ai-chip" onclick="setAIPrompt('Beri 3 ide magic item langka yang cocok sebagai reward bos berikutnya.')">💎 Ide Hadiah/Loot</div>
+        </div>
+
+        <!-- Chat History Box -->
+        <div class="ai-chat-box" id="aiChatBox">
+          <div class="ai-msg bot">
+            Halo <b>Malexius</b>! Aku siap mendampingi petualanganmu. Kamu bisa minta aku mendeskripsikan seranganmu secara dramatis, tanya aturan D&D 5e, atau minta saran taktik pertarungan!
+          </div>
+        </div>
+
+        <div class="ai-typing" id="aiTyping">🐾 Kopi & Gemini sedang berpikir...</div>
+
+        <!-- Input Bar -->
+        <div class="ai-input-wrap">
+          <input type="text" class="ai-input" id="aiInput" placeholder="Tanya aturan, minta narasi serangan, atau ide..." onkeydown="if(event.key==='Enter') sendAIMessage()" />
+          <button class="ai-send-btn" id="aiSendBtn" onclick="sendAIMessage()">Kirim</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- IMPORT CHARACTER SHEET MODAL -->
+  <div class="sheet-modal-backdrop" id="sheetImportModal">
+    <div class="sheet-modal-content">
+      <div class="sheet-modal-header">
+        <div class="sheet-modal-title">
+          <span>📜</span>
+          <span>Import D&D Character Sheet</span>
+        </div>
+        <button class="combat-btn red" onclick="closeImportModal()" style="padding: 2px 7px; font-size: 12px;">✕</button>
+      </div>
+
+      <div style="font-size: 10px; color: var(--text-muted); line-height: 1.4;">
+        Upload file sheet D&D 5e (<b>.pdf</b>, <b>.txt</b>, atau <b>.md</b>) dari D&D Beyond atau sumber lain. AI Gemini akan otomatis mengekstrak statistik, HP, AC, senjata & ability!
+      </div>
+
+      <!-- Primary Action: Native File Dialog -->
+      <button class="char-action-btn import" onclick="pickFileViaNativeDialog()" style="padding: 8px 12px; font-size: 11px; justify-content: center; gap: 6px;">
+        <span>📁</span>
+        <span>Pilih File dari Komputer (.pdf, .txt, .md)</span>
+      </button>
+
+      <!-- Drag & Drop Zone -->
+      <div class="sheet-dropzone" id="sheetDropzone" onclick="document.getElementById('sheetFileInput').click()">
+        <span style="font-size: 22px;">📥</span>
+        <div style="font-size: 11px; font-weight: 700; color: var(--text);">
+          Drag & drop file sheet di sini
+        </div>
+        <div style="font-size: 9.5px; color: var(--text-muted);">
+          atau klik untuk memilih file (.pdf, .txt, .md)
+        </div>
+        <input type="file" id="sheetFileInput" accept=".pdf,.txt,.md" style="display: none;" onchange="handleFileInput(event)" />
+      </div>
+
+      <!-- Paste Text Option -->
+      <details style="font-size: 10.5px; color: var(--text-dim);">
+        <summary style="cursor: pointer; font-weight: 700; color: var(--gold); padding: 2px 0;">
+          Atau Paste Teks / Markdown Sheet Langsung ▾
+        </summary>
+        <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;">
+          <textarea id="pasteSheetText" style="width: 100%; height: 90px; background: #0c0e14; border: 1px solid var(--card-border); border-radius: 6px; color: var(--text); font-size: 10px; padding: 6px; resize: vertical; outline: none; font-family: monospace;" placeholder="Paste teks lembar karakter di sini..."></textarea>
+          <button class="char-action-btn import" onclick="handlePasteImport()" style="padding: 5px 8px; justify-content: center;">
+            <span>✨ Proses Teks dengan AI</span>
+          </button>
+        </div>
+      </details>
+
+      <!-- Loading / Processing Overlay -->
+      <div class="sheet-loading-overlay" id="sheetLoadingOverlay">
+        <div class="sheet-loading-spinner"></div>
+        <div style="font-size: 11px; font-weight: 800; color: var(--gold);" id="sheetLoadingText">
+          🐾 Gemini AI sedang membaca sheet...
+        </div>
+        <div style="font-size: 9.5px; color: var(--text-muted);">
+          Mengekstrak kemampuan, modifier, senjata & skill...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Edge and Corner Resizers -->
+  <div class="resizer-r no-drag" id="resizerR" title="Tarik untuk mengubah lebar"></div>
+  <div class="resizer-b no-drag" id="resizerB" title="Tarik untuk mengubah tinggi"></div>
+  <div class="resizer-rb no-drag" id="resizerRB" title="Tarik untuk memperbesar / memperkecil">◢</div>
+
+  <script>
+    // State
+    const diceCounts = { d20: 0, d12: 0, d100: 0, d10: 0, d8: 0, d6: 0, d4: 0 };
+    let rollMode = 'normal';
+    let modifier = 0;
+    let characterName = localStorage.getItem('dnd_char') || 'Malexius, The One Who Defied Fate';
+    let currentTheme = localStorage.getItem('dnd_theme') || 'icewind';
+    let soundEnabled = localStorage.getItem('dnd_sound') !== 'false';
+    let isPinned = false;
+    let isMaximized = false;
+    let currentSizePreset = localStorage.getItem('dnd_size_preset') || 'M';
+    let history = JSON.parse(localStorage.getItem('dnd_hist') || '[]');
+
+    // Active Roll State for Dynamic Rerolling
+    let currentRoll = {
+      results: [],
+      formulaParts: [],
+      formulaStr: '',
+      modifier: 0
+    };
+
+    const themeMap = {
+      icewind: { name: 'Icewind Dale: Rime of...', icon: '🧊', class: 'skin-icewind' },
+      dragon: { name: 'Dragon Fire: Wrath...', icon: '🔥', class: 'skin-dragon' },
+      shadow: { name: 'Shadowfell: Veil...', icon: '🌌', class: 'skin-shadow' },
+      emerald: { name: 'Emerald Grove: Sylvan...', icon: '🍃', class: 'skin-emerald' }
+    };
+
+    // Initialize UI
+    document.getElementById('charDisplayName').innerText = characterName.toUpperCase();
+    document.getElementById('themeDropdown').value = currentTheme;
+    applyThemeUI(currentTheme);
+    renderHistory();
+    updateSoundBtn();
+    highlightSizeBtn(currentSizePreset);
+
+    window.addEventListener('pywebviewready', function() {
+      if (currentSizePreset && currentSizePreset !== 'M') {
+        setWindowPresetSize(currentSizePreset, false);
+      }
+    });
+
+    // Preset Sizes (S = Compact, M = Normal, L = Large)
+    const presetDimensions = {
+      S: { w: 360, h: 540, zoom: '0.88' },
+      M: { w: 450, h: 680, zoom: '1.0' },
+      L: { w: 560, h: 820, zoom: '1.15' }
+    };
+
+    function setWindowPresetSize(sizeKey, save = true) {
+      const preset = presetDimensions[sizeKey];
+      if (!preset) return;
+      currentSizePreset = sizeKey;
+      if (save) localStorage.setItem('dnd_size_preset', sizeKey);
+      highlightSizeBtn(sizeKey);
+
+      document.body.style.zoom = preset.zoom;
+
+      if (window.pywebview && window.pywebview.api && window.pywebview.api.resize_window) {
+        window.pywebview.api.resize_window(preset.w, preset.h);
+      }
+    }
+
+    function highlightSizeBtn(sizeKey) {
+      ['sizeS', 'sizeM', 'sizeL'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
+      const activeEl = document.getElementById(`size${sizeKey}`);
+      if (activeEl) activeEl.classList.add('active');
+    }
+
+    // Double-click header to maximize / restore
+    document.getElementById('headerBar').addEventListener('dblclick', function(e) {
+      if (!e.target.closest('.no-drag, button, select, input')) {
+        toggleMaximize();
+      }
+    });
+
+    // Window Dragging & Edge Resizing
+    let isDragging = false;
+    let dragStartX = 0, dragStartY = 0;
+    let winStartX = 0, winStartY = 0;
+
+    let isResizing = false;
+    let resizeMode = '';
+    let rStartX = 0, rStartY = 0;
+    let rStartW = 0, rStartH = 0;
+    let resizeRaf = null;
+
+    const headerBar = document.getElementById('headerBar');
+    headerBar.addEventListener('mousedown', function(e) {
+      if (e.button === 0 && !e.target.closest('.no-drag, button, select, input')) {
+        isDragging = true;
+        dragStartX = e.screenX;
+        dragStartY = e.screenY;
+        winStartX = window.screenX || 0;
+        winStartY = window.screenY || 0;
+      }
+    });
+
+    function initResizer(el, mode) {
+      el.addEventListener('mousedown', function(e) {
+        if (e.button === 0) {
+          isResizing = true;
+          resizeMode = mode;
+          rStartX = e.screenX;
+          rStartY = e.screenY;
+          rStartW = window.outerWidth || window.innerWidth || 420;
+          rStartH = window.outerHeight || window.innerHeight || 640;
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      });
+    }
+
+    initResizer(document.getElementById('resizerR'), 'r');
+    initResizer(document.getElementById('resizerB'), 'b');
+    initResizer(document.getElementById('resizerRB'), 'rb');
+
+    window.addEventListener('mousemove', function(e) {
+      if (isDragging) {
+        const dx = e.screenX - dragStartX;
+        const dy = e.screenY - dragStartY;
+        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+          if (window.pywebview && window.pywebview.api && window.pywebview.api.move_window) {
+            window.pywebview.api.move_window(winStartX + dx, winStartY + dy);
+          }
+        }
+      } else if (isResizing) {
+        const dx = e.screenX - rStartX;
+        const dy = e.screenY - rStartY;
+        let newW = rStartW;
+        let newH = rStartH;
+
+        if (resizeMode === 'r' || resizeMode === 'rb') {
+          newW = Math.max(340, Math.min(1920, rStartW + dx));
+        }
+        if (resizeMode === 'b' || resizeMode === 'rb') {
+          newH = Math.max(480, Math.min(1200, rStartH + dy));
+        }
+
+        if (!resizeRaf) {
+          resizeRaf = requestAnimationFrame(() => {
+            resizeRaf = null;
+            if (window.pywebview && window.pywebview.api && window.pywebview.api.resize_window) {
+              window.pywebview.api.resize_window(newW, newH);
+            }
+          });
+        }
+      }
+    });
+
+    window.addEventListener('mouseup', function() {
+      isDragging = false;
+      isResizing = false;
+    });
+
+    // Dice Selection
+    function addDie(die) {
+      diceCounts[die] = (diceCounts[die] || 0) + 1;
+      updateDieUI(die);
+      playClickSound();
+    }
+
+    function subDie(die, e) {
+      if (e) e.preventDefault();
+      if (diceCounts[die] > 0) {
+        diceCounts[die]--;
+        updateDieUI(die);
+        playClickSound();
+      }
+    }
+
+    function updateDieUI(die) {
+      const slot = document.querySelector(`.die-slot[data-die="${die}"]`);
+      const badge = document.getElementById(`badge_${die}`);
+      const count = diceCounts[die] || 0;
+      if (count > 0) {
+        slot.classList.add('selected');
+        badge.innerText = count > 99 ? '99+' : count;
+      } else {
+        slot.classList.remove('selected');
+        badge.innerText = '0';
+      }
+    }
+
+    function resetSelection(playSound = true) {
+      for (const d of Object.keys(diceCounts)) {
+        diceCounts[d] = 0;
+        updateDieUI(d);
+      }
+      modifier = 0;
+      const modEl = document.getElementById('modDisplay');
+      if (modEl) modEl.innerText = '+0';
+      setRollMode('normal', false);
+      if (playSound) playClickSound();
+    }
+
+    function clearDice() {
+      // 1. Clear top rolled dice grid & hide wrapper
+      const grid = document.getElementById('diceResultsGrid');
+      if (grid) grid.innerHTML = '';
+      const wrap = document.getElementById('diceResultsWrap');
+      if (wrap) wrap.style.display = 'none';
+
+      // 2. Reset hero total and remove crit styles
+      const totalEl = document.getElementById('heroTotal');
+      if (totalEl) {
+        totalEl.innerText = '--';
+        totalEl.classList.remove('crit-20', 'crit-1');
+      }
+
+      // 3. Reset formula breakdown and hero badge
+      const formulaEl = document.getElementById('heroFormula');
+      if (formulaEl) formulaEl.innerText = 'Select dice below and click ROLL';
+      const badgePrefix = document.getElementById('heroBadgePrefix');
+      const badgeType = document.getElementById('heroBadgeType');
+      if (badgePrefix) badgePrefix.innerText = 'CUSTOM:';
+      if (badgeType) badgeType.innerText = 'ROLL';
+
+      // 4. Reset crit announcement banner
+      const critStrip = document.getElementById('critStrip');
+      if (critStrip) {
+        critStrip.className = 'crit-strip';
+        critStrip.innerText = '';
+      }
+
+      // 5. Reset timestamp and active roll state
+      const rollTime = document.getElementById('rollTime');
+      if (rollTime) rollTime.innerText = 'Ready';
+
+      currentRoll = {
+        results: [],
+        formulaParts: [],
+        formulaStr: '',
+        modifier: 0
+      };
+
+      // 6. Reset dice selection pool, modifier, roll mode, and cat eyes
+      resetSelection(false);
+      kopiNormal();
+      playClickSound();
+    }
+
+    // Roll Mode
+    function setRollMode(mode, playSound = true) {
+      rollMode = mode;
+      document.getElementById('btnNorm').classList.toggle('active', mode === 'normal');
+      document.getElementById('btnAdv').classList.toggle('active', mode === 'adv');
+      document.getElementById('btnDis').classList.toggle('active', mode === 'dis');
+      if (playSound) playClickSound();
+    }
+
+    // Modifier
+    function changeMod(delta) {
+      modifier += delta;
+      document.getElementById('modDisplay').innerText = (modifier >= 0 ? '+' : '') + modifier;
+      playClickSound();
+    }
+
+    // Theme Switch
+    function changeTheme(theme) {
+      currentTheme = theme;
+      localStorage.setItem('dnd_theme', theme);
+      applyThemeUI(theme);
+    }
+
+    function applyThemeUI(theme) {
+      const info = themeMap[theme] || themeMap.icewind;
+      document.getElementById('skinTitle').innerText = info.name;
+      document.getElementById('skinCube').innerText = info.icon;
+      document.getElementById('skinCube').className = `skin-cube-icon ${info.class}`;
+      document.getElementById('themeTitle').innerText = info.name;
+    }
+
+    // Character Rename
+    function renameChar() {
+      const next = prompt("Enter character name:", characterName);
+      if (next && next.trim()) {
+        characterName = next.trim();
+        localStorage.setItem('dnd_char', characterName);
+        document.getElementById('charDisplayName').innerText = characterName.toUpperCase();
+      }
+    }
+
+    // MAIN ROLL LOGIC
+    function rollDice() {
+      const active = Object.entries(diceCounts).filter(([_, c]) => c > 0);
+      let isDefault = false;
+      if (active.length === 0) {
+        diceCounts.d20 = 1;
+        updateDieUI('d20');
+        isDefault = true;
+      }
+
+      playRollSound();
+      kopiRollEyes();
+
+      const results = [];
+      const formulaParts = [];
+      const isSingleD20 = (diceCounts.d20 === 1 && Object.values(diceCounts).reduce((a,b)=>a+b,0) === 1);
+
+      for (const [dieName, count] of Object.entries(diceCounts)) {
+        if (count <= 0) continue;
+        const sides = parseInt(dieName.replace('d', ''));
+        formulaParts.push(`${count}${dieName}`);
+
+        if (sides === 20 && count === 1 && rollMode !== 'normal') {
+          const r1 = Math.floor(Math.random() * 20) + 1;
+          const r2 = Math.floor(Math.random() * 20) + 1;
+          let kept, dropped;
+          if (rollMode === 'adv') {
+            kept = Math.max(r1, r2);
+            dropped = Math.min(r1, r2);
+          } else {
+            kept = Math.min(r1, r2);
+            dropped = Math.max(r1, r2);
+          }
+          results.push({ sides: 20, val: kept, dropped: false });
+          results.push({ sides: 20, val: dropped, dropped: true });
+        } else {
+          for (let i = 0; i < count; i++) {
+            const val = Math.floor(Math.random() * sides) + 1;
+            results.push({ sides: sides, val: val, dropped: false });
+          }
+        }
+      }
+
+      let formulaStr = formulaParts.join(' + ');
+      if (rollMode === 'adv' && isSingleD20) formulaStr += ' (Adv)';
+      if (rollMode === 'dis' && isSingleD20) formulaStr += ' (Disadv)';
+      if (modifier !== 0) formulaStr += (modifier > 0 ? ` + ${modifier}` : ` - ${Math.abs(modifier)}`);
+
+      // Store in current roll state
+      currentRoll = {
+        results: results,
+        formulaParts: formulaParts,
+        formulaStr: formulaStr,
+        modifier: modifier
+      };
+
+      renderDiceGrid(results);
+      recalculateRoll(true);
+
+      // Clear dice selection after roll as requested
+      for (const d of Object.keys(diceCounts)) {
+        diceCounts[d] = 0;
+        updateDieUI(d);
+      }
+    }
+
+    // Recalculates total, formula breakdown, crits, and history dynamically on any reroll!
+    function recalculateRoll(isNewRoll = false) {
+      if (!currentRoll.results || currentRoll.results.length === 0) return;
+
+      const activeVals = currentRoll.results.filter(r => !r.dropped).map(r => r.val);
+      const grandTotal = activeVals.reduce((a, b) => a + b, 0) + currentRoll.modifier;
+
+      animateTotal(grandTotal);
+
+      // Check Crits on d20: Natural 20 / Natural 1 ONLY for a single 1d20 check (or single check with Adv/Disadv)
+      const nonDropped = currentRoll.results.filter(r => !r.dropped);
+      const isSingleD20 = (nonDropped.length === 1 && nonDropped[0].sides === 20);
+      const critStrip = document.getElementById('critStrip');
+      const totalEl = document.getElementById('heroTotal');
+      critStrip.className = 'crit-strip';
+      totalEl.classList.remove('crit-20', 'crit-1');
+
+      if (isSingleD20) {
+        const rollVal = nonDropped[0].val;
+        if (rollVal === 20) {
+          critStrip.innerText = '⚡ NATURAL 20! CRITICAL HIT! ⚡';
+          critStrip.classList.add('crit-20');
+          totalEl.classList.add('crit-20');
+          kopiNat20();
+          audioEngine.playCritBoom();
+        } else if (rollVal === 1) {
+          critStrip.innerText = '💀 NATURAL 1! CRITICAL MISS! 💀';
+          critStrip.classList.add('crit-1');
+          totalEl.classList.add('crit-1');
+          kopiNat1();
+          audioEngine.playFumbleShatter();
+        } else {
+          kopiNormal();
+        }
+      } else {
+        kopiNormal();
+      }
+
+      // Update Formula Breakdown
+      const modStr = currentRoll.modifier !== 0 ? (currentRoll.modifier > 0 ? ` + ${currentRoll.modifier}` : ` - ${Math.abs(currentRoll.modifier)}`) : '';
+      const detailStr = activeVals.join(' + ') + modStr;
+      document.getElementById('heroFormula').innerText = `${currentRoll.formulaStr} = ${detailStr}`;
+      document.getElementById('rollTime').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+      // Save / Update History
+      if (isNewRoll) {
+        history.unshift({
+          char: characterName,
+          total: grandTotal,
+          formula: currentRoll.formulaStr,
+          math: `${detailStr} = ${grandTotal}`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+      } else if (history.length > 0) {
+        history[0] = {
+          char: characterName,
+          total: grandTotal,
+          formula: `${currentRoll.formulaStr} (Rerolled)`,
+          math: `${detailStr} = ${grandTotal}`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+      }
+      if (history.length > 50) history.pop();
+      localStorage.setItem('dnd_hist', JSON.stringify(history));
+      renderHistory();
+    }
+
+    // Reroll single die clicked by user
+    function rerollSingleDie(index) {
+      if (!currentRoll.results[index] || currentRoll.results[index].dropped) return;
+      playRollSound();
+
+      const die = currentRoll.results[index];
+      die.val = Math.floor(Math.random() * die.sides) + 1;
+
+      // Animate tile spin & pop
+      const tile = document.getElementById(`diceTile_${index}`);
+      if (tile) {
+        tile.classList.add('rerolling');
+        tile.querySelector('.tile-val').innerText = die.val;
+        setTimeout(() => tile.classList.remove('rerolling'), 240);
+      }
+
+      recalculateRoll(false);
+    }
+
+    // Batch Reroll: Rerolls all 1s and 2s (Great Weapon Fighting / Elemental Adept)
+    function rerollLowDice() {
+      if (!currentRoll.results || currentRoll.results.length === 0) return;
+      let rerolledCount = 0;
+      playRollSound();
+
+      currentRoll.results.forEach((die, index) => {
+        if (!die.dropped && (die.val === 1 || die.val === 2)) {
+          die.val = Math.floor(Math.random() * die.sides) + 1;
+          rerolledCount++;
+          const tile = document.getElementById(`diceTile_${index}`);
+          if (tile) {
+            tile.classList.add('rerolling');
+            tile.querySelector('.tile-val').innerText = die.val;
+            setTimeout(() => tile.classList.remove('rerolling'), 240);
+          }
+        }
+      });
+
+      if (rerolledCount > 0) {
+        recalculateRoll(false);
+      }
+    }
+
+    // Batch Reroll: Reroll all dice in the pool
+    function rerollAllDice() {
+      if (!currentRoll.results || currentRoll.results.length === 0) return;
+      playRollSound();
+
+      currentRoll.results.forEach((die, index) => {
+        if (!die.dropped) {
+          die.val = Math.floor(Math.random() * die.sides) + 1;
+          const tile = document.getElementById(`diceTile_${index}`);
+          if (tile) {
+            tile.classList.add('rerolling');
+            tile.querySelector('.tile-val').innerText = die.val;
+            setTimeout(() => tile.classList.remove('rerolling'), 240);
+          }
+        }
+      });
+
+      recalculateRoll(false);
+    }
+
+    function animateTotal(target) {
+      const el = document.getElementById('heroTotal');
+      const startTime = performance.now();
+      const startVal = parseInt(el.innerText) || 0;
+      const duration = 200;
+      function tick(now) {
+        const p = Math.min((now - startTime) / duration, 1);
+        el.innerText = Math.round(startVal + (target - startVal) * p);
+        if (p < 1) requestAnimationFrame(tick);
+        else el.innerText = target;
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function renderDiceGrid(results) {
+      const wrap = document.getElementById('diceResultsWrap');
+      const grid = document.getElementById('diceResultsGrid');
+      grid.innerHTML = '';
+      wrap.style.display = 'flex';
+
+      const skinClass = (themeMap[currentTheme] || themeMap.icewind).class;
+
+      results.forEach((r, idx) => {
+        const tile = document.createElement('div');
+        tile.className = `res-tile ${skinClass} ${r.dropped ? 'dropped' : ''}`;
+        tile.id = `diceTile_${idx}`;
+        tile.innerHTML = `
+          <span class="tile-val">${r.val}</span>
+          <span class="die-type">d${r.sides}</span>
+          <span class="reroll-icon">↻</span>
+        `;
+        tile.title = r.dropped ? `Dropped (d${r.sides})` : `Click to reroll this d${r.sides} (Total recalculates automatically!)`;
+        if (!r.dropped) {
+          tile.onclick = () => rerollSingleDie(idx);
+        }
+        grid.appendChild(tile);
+      });
+    }
+
+    // Kopi Pixel Cat Reactions
+    function kopiPoke() {
+      const eyes = [
+        ['#f59e0b', 3, 3],
+        ['#fde047', 4, 2],
+        ['#ef4444', 3, 3],
+        ['#38bdf8', 3, 3]
+      ];
+      const pick = eyes[Math.floor(Math.random() * eyes.length)];
+      setKopiEyes(pick[0], pick[1], pick[2]);
+    }
+    function kopiRollEyes() {
+      setKopiEyes('#38bdf8', 4, 1);
+    }
+    function kopiNat20() {
+      setKopiEyes('#fde047', 4, 4);
+    }
+    function kopiNat1() {
+      setKopiEyes('#ef4444', 4, 4);
+    }
+    function kopiNormal() {
+      setTimeout(() => setKopiEyes('#f59e0b', 3, 3), 700);
+    }
+    function setKopiEyes(color, w, h) {
+      const l = document.getElementById('kopiEyeL');
+      const r = document.getElementById('kopiEyeR');
+      if (l && r) {
+        l.setAttribute('fill', color);
+        r.setAttribute('fill', color);
+        l.setAttribute('width', w);
+        l.setAttribute('height', h);
+        r.setAttribute('width', w);
+        r.setAttribute('height', h);
+      }
+    }
+
+    // Tabs
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active-dice', 'active-hist', 'active-preset', 'active-malexius', 'active-ai'));
+
+      if (tab === 'dice') {
+        document.getElementById('pageDice').classList.add('active');
+        document.getElementById('tabDice').classList.add('active-dice');
+      } else if (tab === 'history') {
+        document.getElementById('pageHistory').classList.add('active');
+        document.getElementById('tabHist').classList.add('active-hist');
+        renderHistory();
+      } else if (tab === 'presets') {
+        document.getElementById('pagePresets').classList.add('active');
+        document.getElementById('tabPreset').classList.add('active-preset');
+      } else if (tab === 'malexius') {
+        document.getElementById('pageMalexius').classList.add('active');
+        document.getElementById('tabMalexius').classList.add('active-malexius');
+      } else if (tab === 'ai') {
+        document.getElementById('pageAI').classList.add('active');
+        document.getElementById('tabAI').classList.add('active-ai');
+        const box = document.getElementById('aiChatBox');
+        if (box) box.scrollTop = box.scrollHeight;
+        const input = document.getElementById('aiInput');
+        if (input) setTimeout(() => input.focus(), 100);
+      }
+    }
+
+    // AI Chat Implementation
+    const GEMINI_API_KEY = "";
+
+    function setAIPrompt(text) {
+      const input = document.getElementById('aiInput');
+      if (input) {
+        input.value = text;
+        input.focus();
+      }
+    }
+
+    function askAINarration() {
+      if (!currentRoll.results || currentRoll.results.length === 0) {
+        appendAIMessage('bot', 'Belum ada lemparan dadu! Lempar dadu terlebih dahulu di tab **Dice** atau tab **Malexius**, lalu klik tombol ini lagi.');
+        return;
+      }
+      const activeVals = currentRoll.results.filter(r => !r.dropped).map(r => r.val);
+      const grandTotal = activeVals.reduce((a, b) => a + b, 0) + currentRoll.modifier;
+      const rollFormula = currentRoll.formulaStr || `${activeVals.length} dadu`;
+      const prompt = `Deskripsikan secara sinematik dan seru aksi/serangan Malexius yang baru saja menghasilkan lemparan ${rollFormula} dengan Total: ${grandTotal}!`;
+      sendMessageWithPrompt(prompt);
+    }
+
+    function clearAIChat() {
+      const box = document.getElementById('aiChatBox');
+      if (box) {
+        box.innerHTML = `
+          <div class="ai-msg bot">
+            Riwayat chat dibersihkan. Halo <b>Malexius</b>, ada yang bisa aku bantu?
+          </div>
+        `;
+      }
+    }
+
+    function formatAIMarkdown(text) {
+      if (!text) return '';
+      let clean = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      clean = clean.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+      clean = clean.replace(/\*(.*?)\*/g, '<i>$1</i>');
+      clean = clean.replace(/```([\s\S]*?)```/g, '<pre style="background:rgba(0,0,0,0.4);padding:4px 6px;border-radius:4px;font-size:10.5px;overflow-x:auto;"><code>$1</code></pre>');
+      clean = clean.replace(/`([^`]+)`/g, '<code style="background:rgba(0,0,0,0.3);padding:1px 3px;border-radius:3px;">$1</code>');
+      clean = clean.replace(/\[Roll:\s*([^\]]+)\]/gi, (match, formula) => {
+        return `<button class="ai-roll-btn" onclick="executeAIRoll('${formula.trim()}')">🎲 Roll ${formula.trim()}</button>`;
+      });
+      clean = clean.replace(/\n/g, '<br/>');
+      return clean;
+    }
+
+    function executeAIRoll(formula) {
+      switchTab('dice');
+      resetSelection(false);
+      const parts = formula.split('+').map(p => p.trim());
+      let parsedMod = 0;
+      for (const p of parts) {
+        if (p.includes('d')) {
+          const match = p.match(/(\d*)d(\d+)/i);
+          if (match) {
+            const count = parseInt(match[1] || '1');
+            const sides = 'd' + match[2];
+            if (diceCounts[sides] !== undefined) {
+              diceCounts[sides] = (diceCounts[sides] || 0) + count;
+              updateDieUI(sides);
+            }
+          }
+        } else {
+          const n = parseInt(p);
+          if (!isNaN(n)) parsedMod += n;
+        }
+      }
+      modifier = parsedMod;
+      const modEl = document.getElementById('modVal');
+      if (modEl) modEl.innerText = (modifier >= 0 ? '+' : '') + modifier;
+      rollDice();
+    }
+
+    async function sendAIMessage() {
+      const input = document.getElementById('aiInput');
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      sendMessageWithPrompt(text);
+    }
+
+    function appendAIMessage(role, content) {
+      const box = document.getElementById('aiChatBox');
+      if (!box) return;
+      const msg = document.createElement('div');
+      msg.className = `ai-msg ${role}`;
+      msg.innerHTML = formatAIMarkdown(content);
+      box.appendChild(msg);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendMessageWithPrompt(prompt) {
+      appendAIMessage('user', prompt);
+      const typing = document.getElementById('aiTyping');
+      if (typing) typing.style.display = 'block';
+
+      const activeChar = typeof getActiveCharacter === 'function' ? getActiveCharacter() : null;
+      let context = activeChar ? `Karakter: ${activeChar.name} (${activeChar.subtitle || ''}). HP: ${activeChar.hp}/${activeChar.maxHp || activeChar.hp}, AC: ${activeChar.ac}, Init: +${activeChar.initMod}.` : `Karakter: Malexius.`;
+      if (currentRoll && currentRoll.results && currentRoll.results.length > 0) {
+        const activeVals = currentRoll.results.filter(r => !r.dropped).map(r => r.val);
+        const grandTotal = activeVals.reduce((a, b) => a + b, 0) + currentRoll.modifier;
+        context += ` Last Roll: ${currentRoll.formulaStr} = ${grandTotal}`;
+      }
+
+      const customKey = localStorage.getItem('dnd_gemini_key') || GEMINI_API_KEY;
+
+      try {
+        let reply = "";
+        if (window.pywebview && window.pywebview.api && window.pywebview.api.ask_ai) {
+          const res = await window.pywebview.api.ask_ai(prompt, context, customKey);
+          if (res && res.success) {
+            reply = res.reply;
+          } else {
+            throw new Error(res ? res.error : "Gagal memanggil API");
+          }
+        } else {
+          const models = ["gemini-flash-lite-latest", "gemini-3.8-flash", "gemini-3.5-flash"];
+          let success = false;
+          for (const m of models) {
+            try {
+              const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${customKey}`;
+              const resp = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{
+                    parts: [{ text: `System: D&D 5e assistant untuk Malexius.\nKonteks: ${context}\nUser: ${prompt}` }]
+                  }],
+                  generationConfig: { temperature: 0.7, maxOutputTokens: 600 }
+                })
+              });
+              if (resp.ok) {
+                const data = await resp.json();
+                reply = data.candidates[0].content.parts[0].text;
+                success = true;
+                break;
+              }
+            } catch (err) {
+              console.warn(err);
+            }
+          }
+          if (!success) throw new Error("Gagal terhubung ke Gemini API.");
+        }
+        appendAIMessage('bot', reply);
+      } catch (err) {
+        appendAIMessage('bot', `⚠️ Terjadi kendala: ${err.message}`);
+      } finally {
+        if (typing) typing.style.display = 'none';
+      }
+    }
+
+    // ==========================================
+    // CHARACTER SHEET MANAGER & DYNAMIC IMPORTER
+    // ==========================================
+    const MALEXIUS_CHAR = {
+      id: 'malexius',
+      name: 'MALEXIUS, THE ONE WHO DEFIED FATE',
+      shortName: 'Malexius',
+      subtitle: 'Level 20 Multiclass • Rogue 17 (Thief) / Fighter 2 / Wizard 1',
+      hp: 177,
+      maxHp: 177,
+      tempHp: 30,
+      ac: '36 / 31',
+      initMod: 16
+    };
+
+    function getCustomCharacters() {
+      try {
+        return JSON.parse(localStorage.getItem('dnd_custom_characters') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveCustomCharacters(list) {
+      localStorage.setItem('dnd_custom_characters', JSON.stringify(list));
+    }
+
+    function getActiveCharId() {
+      return localStorage.getItem('dnd_active_char_id') || 'malexius';
+    }
+
+    function setActiveCharId(id) {
+      localStorage.setItem('dnd_active_char_id', id);
+      updateActiveCharacterUI();
+    }
+
+    function getActiveCharacter() {
+      const activeId = getActiveCharId();
+      if (activeId === 'malexius') return MALEXIUS_CHAR;
+      const customList = getCustomCharacters();
+      const found = customList.find(c => c.id === activeId);
+      return found || MALEXIUS_CHAR;
+    }
+
+    function onSelectCharacter(id) {
+      setActiveCharId(id);
+    }
+
+    function openImportModal() {
+      const modal = document.getElementById('sheetImportModal');
+      if (modal) modal.classList.add('active');
+    }
+
+    function closeImportModal() {
+      const modal = document.getElementById('sheetImportModal');
+      if (modal) modal.classList.remove('active');
+      setImportLoading(false);
+    }
+
+    function setImportLoading(isLoading, msg = '') {
+      const overlay = document.getElementById('sheetLoadingOverlay');
+      const textEl = document.getElementById('sheetLoadingText');
+      if (overlay) overlay.style.display = isLoading ? 'flex' : 'none';
+      if (textEl && msg) textEl.innerText = msg;
+    }
+
+    async function pickFileViaNativeDialog() {
+      if (!window.pywebview || !window.pywebview.api || !window.pywebview.api.pick_and_parse_character_sheet) {
+        alert("File dialog native belum tersedia. Silakan gunakan upload file atau paste teks di bawah.");
+        return;
+      }
+      setImportLoading(true, "Membuka file dialog Windows...");
+      try {
+        const res = await window.pywebview.api.pick_and_parse_character_sheet();
+        if (res.cancelled) {
+          setImportLoading(false);
+          return;
+        }
+        if (res.success && res.character) {
+          saveNewCharacter(res.character);
+          closeImportModal();
+        } else {
+          alert(res.error || "Gagal mengimpor sheet.");
+        }
+      } catch (err) {
+        alert("Error: " + err.message);
+      } finally {
+        setImportLoading(false);
+      }
+    }
+
+    function handleFileInput(event) {
+      const file = event.target.files && event.target.files[0];
+      if (file) {
+        processUploadedFile(file);
+      }
+    }
+
+    function processUploadedFile(file) {
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (ext === 'pdf') {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          setImportLoading(true, "Mengekstrak teks PDF dengan Python...");
+          try {
+            if (window.pywebview && window.pywebview.api && window.pywebview.api.extract_pdf_text_b64) {
+              const res = await window.pywebview.api.extract_pdf_text_b64(e.target.result);
+              if (res.success && res.text) {
+                await sendTextToAiParser(res.text, file.name);
+              } else {
+                alert(res.error || "Gagal membaca teks dari PDF.");
+                setImportLoading(false);
+              }
+            } else {
+              alert("Backend Python diperlukan untuk mengekstrak file PDF.");
+              setImportLoading(false);
+            }
+          } catch (err) {
+            alert("Error PDF: " + err.message);
+            setImportLoading(false);
+          }
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // .txt or .md
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          await sendTextToAiParser(e.target.result, file.name);
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    async function sendTextToAiParser(rawText, sourceName = "Sheet") {
+      setImportLoading(true, `🐾 Gemini AI sedang menganalisis ${sourceName}...`);
+      try {
+        let res = null;
+        if (window.pywebview && window.pywebview.api && window.pywebview.api.parse_character_sheet) {
+          res = await window.pywebview.api.parse_character_sheet(rawText);
+        } else {
+          const key = localStorage.getItem('dnd_gemini_key') || GEMINI_API_KEY;
+          const prompt = `Extract D&D 5e sheet to valid JSON: { id, name, subtitle, hp, maxHp, tempHp, ac, initMod, speed, proficiency, stats: {STR,DEX,CON,INT,WIS,CHA}, saves: {STR,DEX,CON,INT,WIS,CHA}, attacks: [{name,type,atkBonus,dice,dmgMod,dmgType,desc}], skills: [{name,mod,prof,expertise}], trackers: [{name,current,max}], features: [] }.\nRaw text:\n${rawText.slice(0, 25000)}`;
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${key}`;
+          const r = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: { temperature: 0.2, maxOutputTokens: 2500 }
+            })
+          });
+          if (r.ok) {
+            const data = await r.json();
+            const text = data.candidates[0].content.parts[0].text;
+            let clean = text.trim();
+            if (clean.startsWith('```json')) clean = clean.slice(7);
+            if (clean.startsWith('```')) clean = clean.slice(3);
+            if (clean.endsWith('```')) clean = clean.slice(0, -3);
+            res = { success: true, character: JSON.parse(clean.trim()) };
+          } else {
+            res = { success: false, error: "Gagal memproses via direct API." };
+          }
+        }
+
+        if (res && res.success && res.character) {
+          saveNewCharacter(res.character);
+          closeImportModal();
+        } else {
+          alert((res && res.error) || "AI belum mengenali format lembar karakter ini.");
+        }
+      } catch (err) {
+        alert("Error memproses sheet: " + err.message);
+      } finally {
+        setImportLoading(false);
+      }
+    }
+
+    function handlePasteImport() {
+      const textarea = document.getElementById('pasteSheetText');
+      if (!textarea) return;
+      const text = textarea.value.trim();
+      if (!text) {
+        alert("Silakan paste teks sheet terlebih dahulu.");
+        return;
+      }
+      sendTextToAiParser(text, "Pasted Sheet");
+    }
+
+    function saveNewCharacter(char) {
+      if (!char.id) char.id = 'char_' + Date.now();
+      if (!char.name) char.name = 'Hero Baru';
+      char.shortName = char.name.split(' ')[0];
+      
+      const list = getCustomCharacters();
+      const existingIdx = list.findIndex(c => c.id === char.id);
+      if (existingIdx >= 0) {
+        list[existingIdx] = char;
+      } else {
+        list.push(char);
+      }
+      saveCustomCharacters(list);
+      setActiveCharId(char.id);
+      switchTab('malexius');
+
+      if (window.audioEngine && audioEngine.playMagicChime) {
+        audioEngine.playMagicChime();
+      }
+    }
+
+    function deleteCurrentCharacter() {
+      const activeId = getActiveCharId();
+      if (activeId === 'malexius') {
+        alert("Karakter default Malexius tidak dapat dihapus.");
+        return;
+      }
+      const char = getActiveCharacter();
+      if (confirm(`Yakin ingin menghapus karakter "${char.name}"?`)) {
+        let list = getCustomCharacters();
+        list = list.filter(c => c.id !== activeId);
+        saveCustomCharacters(list);
+        setActiveCharId('malexius');
+      }
+    }
+
+    function renderCustomCharacter(char) {
+      const container = document.getElementById('customCharView');
+      if (!container) return;
+
+      const stats = char.stats || { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 };
+      const saves = char.saves || {};
+      const attacks = char.attacks || [];
+      const skills = char.skills || [];
+      const trackers = char.trackers || [];
+      const features = char.features || [];
+
+      let attacksHtml = '';
+      if (attacks.length > 0) {
+        attacks.forEach((atk, idx) => {
+          const atkBonus = atk.atkBonus !== undefined ? atk.atkBonus : 0;
+          const dmgDice = atk.dice || { d8: 1 };
+          const dmgMod = atk.dmgMod !== undefined ? atk.dmgMod : 0;
+          const diceDesc = atk.desc || Object.entries(dmgDice).map(([d, c]) => `${c}${d}`).join('+') + (dmgMod ? (dmgMod >= 0 ? `+${dmgMod}` : dmgMod) : '');
+          
+          attacksHtml += `
+            <div class="mal-atk-card">
+              <div class="mal-atk-top">
+                <span class="mal-atk-name">⚔️ ${atk.name || 'Weapon ' + (idx + 1)}</span>
+                <span class="mal-atk-meta">${atk.type || 'Action'} ${atk.dmgType ? '• ' + atk.dmgType : ''}</span>
+              </div>
+              <div style="font-size: 9.5px; color: var(--text-muted);">
+                Hit: <b style="color:var(--gold);">${atkBonus >= 0 ? '+' : ''}${atkBonus}</b> | Dmg: <b>${diceDesc}</b> ${atk.dmgType || ''}
+              </div>
+              <div class="mal-atk-btns">
+                <button class="mal-act-btn atk" onclick="rollMalexiusAction('${atk.name} Attack', {d20: 1}, ${atkBonus})">
+                  🎯 Serang (${atkBonus >= 0 ? '+' : ''}${atkBonus})
+                </button>
+                <button class="mal-act-btn dmg" onclick='rollMalexiusAction("${atk.name} Damage", ${JSON.stringify(dmgDice)}, ${dmgMod})'>
+                  💥 Damage (${diceDesc})
+                </button>
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        attacksHtml = `<div style="font-size:10px; color:var(--text-dim); padding:6px 0;">Tidak ada serangan terdaftar.</div>`;
+      }
+
+      let skillsHtml = '';
+      if (skills.length > 0) {
+        skills.forEach(sk => {
+          const mod = sk.mod !== undefined ? sk.mod : 0;
+          const sign = mod >= 0 ? '+' : '';
+          const tag = sk.expertise ? '[E]' : (sk.prof ? '[*]' : '');
+          skillsHtml += `
+            <div class="mal-skill-row" onclick="rollMalexiusAction('${sk.name} Check', {d20: 1}, ${mod})" title="Klik untuk Roll ${sk.name} (${sign}${mod})">
+              <span class="mal-skill-name">${sk.name} <span style="color:var(--gold);font-size:8.5px;">${tag}</span></span>
+              <span class="mal-skill-mod">${sign}${mod}</span>
+            </div>
+          `;
+        });
+      }
+
+      let trackersHtml = '';
+      if (trackers.length > 0) {
+        trackers.forEach((t, i) => {
+          const cur = t.current !== undefined ? t.current : (t.max || 1);
+          const max = t.max !== undefined ? t.max : cur;
+          const tid = `cust_trk_${i}`;
+          trackersHtml += `
+            <div class="mal-track-box">
+              <span class="mal-track-label">${t.name}</span>
+              <div class="mal-track-ctrl">
+                <span class="mal-track-val" id="${tid}">${cur}/${max}</span>
+                <button class="mal-track-btn" onclick="stepTracker('${tid}', -1, 0, ${max})">-</button>
+                <button class="mal-track-btn" onclick="stepTracker('${tid}', 1, 0, ${max})">+</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      const strScore = stats.STR || 10;
+      const dexScore = stats.DEX || 10;
+      const conScore = stats.CON || 10;
+      const intScore = stats.INT || 10;
+      const wisScore = stats.WIS || 10;
+      const chaScore = stats.CHA || 10;
+
+      const strMod = Math.floor((strScore - 10) / 2);
+      const dexMod = Math.floor((dexScore - 10) / 2);
+      const conMod = Math.floor((conScore - 10) / 2);
+      const intMod = Math.floor((intScore - 10) / 2);
+      const wisMod = Math.floor((wisScore - 10) / 2);
+      const chaMod = Math.floor((chaScore - 10) / 2);
+
+      const strSave = saves.STR !== undefined ? saves.STR : strMod;
+      const dexSave = saves.DEX !== undefined ? saves.DEX : dexMod;
+      const conSave = saves.CON !== undefined ? saves.CON : conMod;
+      const intSave = saves.INT !== undefined ? saves.INT : intMod;
+      const wisSave = saves.WIS !== undefined ? saves.WIS : wisMod;
+      const chaSave = saves.CHA !== undefined ? saves.CHA : chaMod;
+
+      const initBonus = char.initMod !== undefined ? char.initMod : dexMod;
+
+      container.innerHTML = `
+        <!-- Custom Hero Card -->
+        <div class="mal-card">
+          <div class="mal-header">
+            <div class="mal-name-hero" style="color:var(--gold);text-shadow:0 0 10px rgba(245,158,11,0.3);">
+              <span>👤</span> ${char.name.toUpperCase()}
+            </div>
+            <div class="mal-sub-hero">
+              ${char.subtitle || 'D&D 5e Adventurer'}
+            </div>
+            <div class="mal-badges-row">
+              <span class="mal-badge gold">PB +${char.proficiency || 2}</span>
+              <span class="mal-badge cyan">Speed: ${char.speed || '30 ft'}</span>
+              <span class="mal-badge purple">AC: ${char.ac || 10}</span>
+              <span class="mal-badge">Init: ${initBonus >= 0 ? '+' : ''}${initBonus}</span>
+            </div>
+          </div>
+
+          <!-- Vitals -->
+          <div class="mal-vitals-grid">
+            <div class="mal-vital-box">
+              <span class="mal-vital-label">HP</span>
+              <span class="mal-vital-val hp">${char.hp || 10}/${char.maxHp || char.hp || 10}</span>
+            </div>
+            <div class="mal-vital-box">
+              <span class="mal-vital-label">Temp HP</span>
+              <span class="mal-vital-val thp">+${char.tempHp || 0}</span>
+            </div>
+            <div class="mal-vital-box">
+              <span class="mal-vital-label">AC</span>
+              <span class="mal-vital-val ac">${char.ac || 10}</span>
+            </div>
+            <div class="mal-vital-box" style="cursor:pointer;" onclick="rollMalexiusAction('Initiative Check', {d20: 1}, ${initBonus})" title="Klik untuk Roll Initiative">
+              <span class="mal-vital-label">Init ⚡</span>
+              <span class="mal-vital-val init">${initBonus >= 0 ? '+' : ''}${initBonus}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ability Scores & Saves -->
+        <div class="mal-card">
+          <div class="mal-section-title">📊 Ability Scores & Saving Throws (Click to Roll)</div>
+          <div class="mal-stats-grid">
+            <!-- STR -->
+            <div class="mal-stat-col">
+              <span class="mal-stat-name">STR</span>
+              <span class="mal-stat-mod">${strMod >= 0 ? '+' : ''}${strMod}</span>
+              <span class="mal-stat-score">${strScore}</span>
+              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('STR Check', {d20: 1}, ${strMod})">${strMod >= 0 ? '+' : ''}${strMod}</button>
+              <button class="mal-stat-roll-btn ${saves.STR !== undefined && saves.STR !== strMod ? 'prof' : ''}" onclick="rollMalexiusAction('STR Save', {d20: 1}, ${strSave})">Sv ${strSave >= 0 ? '+' : ''}${strSave}</button>
+            </div>
+            <!-- DEX -->
+            <div class="mal-stat-col">
+              <span class="mal-stat-name">DEX</span>
+              <span class="mal-stat-mod">${dexMod >= 0 ? '+' : ''}${dexMod}</span>
+              <span class="mal-stat-score">${dexScore}</span>
+              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('DEX Check', {d20: 1}, ${dexMod})">${dexMod >= 0 ? '+' : ''}${dexMod}</button>
+              <button class="mal-stat-roll-btn ${saves.DEX !== undefined && saves.DEX !== dexMod ? 'prof' : ''}" onclick="rollMalexiusAction('DEX Save', {d20: 1}, ${dexSave})">Sv ${dexSave >= 0 ? '+' : ''}${dexSave}</button>
+            </div>
+            <!-- CON -->
+            <div class="mal-stat-col">
+              <span class="mal-stat-name">CON</span>
+              <span class="mal-stat-mod">${conMod >= 0 ? '+' : ''}${conMod}</span>
+              <span class="mal-stat-score">${conScore}</span>
+              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('CON Check', {d20: 1}, ${conMod})">${conMod >= 0 ? '+' : ''}${conMod}</button>
+              <button class="mal-stat-roll-btn ${saves.CON !== undefined && saves.CON !== conMod ? 'prof' : ''}" onclick="rollMalexiusAction('CON Save', {d20: 1}, ${conSave})">Sv ${conSave >= 0 ? '+' : ''}${conSave}</button>
+            </div>
+            <!-- INT -->
+            <div class="mal-stat-col">
+              <span class="mal-stat-name">INT</span>
+              <span class="mal-stat-mod">${intMod >= 0 ? '+' : ''}${intMod}</span>
+              <span class="mal-stat-score">${intScore}</span>
+              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('INT Check', {d20: 1}, ${intMod})">${intMod >= 0 ? '+' : ''}${intMod}</button>
+              <button class="mal-stat-roll-btn ${saves.INT !== undefined && saves.INT !== intMod ? 'prof' : ''}" onclick="rollMalexiusAction('INT Save', {d20: 1}, ${intSave})">Sv ${intSave >= 0 ? '+' : ''}${intSave}</button>
+            </div>
+            <!-- WIS -->
+            <div class="mal-stat-col">
+              <span class="mal-stat-name">WIS</span>
+              <span class="mal-stat-mod">${wisMod >= 0 ? '+' : ''}${wisMod}</span>
+              <span class="mal-stat-score">${wisScore}</span>
+              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('WIS Check', {d20: 1}, ${wisMod})">${wisMod >= 0 ? '+' : ''}${wisMod}</button>
+              <button class="mal-stat-roll-btn ${saves.WIS !== undefined && saves.WIS !== wisMod ? 'prof' : ''}" onclick="rollMalexiusAction('WIS Save', {d20: 1}, ${wisSave})">Sv ${wisSave >= 0 ? '+' : ''}${wisSave}</button>
+            </div>
+            <!-- CHA -->
+            <div class="mal-stat-col">
+              <span class="mal-stat-name">CHA</span>
+              <span class="mal-stat-mod">${chaMod >= 0 ? '+' : ''}${chaMod}</span>
+              <span class="mal-stat-score">${chaScore}</span>
+              <button class="mal-stat-roll-btn" onclick="rollMalexiusAction('CHA Check', {d20: 1}, ${chaMod})">${chaMod >= 0 ? '+' : ''}${chaMod}</button>
+              <button class="mal-stat-roll-btn ${saves.CHA !== undefined && saves.CHA !== chaMod ? 'prof' : ''}" onclick="rollMalexiusAction('CHA Save', {d20: 1}, ${chaSave})">Sv ${chaSave >= 0 ? '+' : ''}${chaSave}</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attacks -->
+        <div class="mal-card">
+          <div class="mal-section-title">⚔️ Attacks & Arsenal (One-Click Roll)</div>
+          ${attacksHtml}
+        </div>
+
+        <!-- Skills -->
+        ${skills.length > 0 ? `
+          <div class="mal-card">
+            <div class="mal-section-title">🎯 Skills (${skills.length})</div>
+            <div class="mal-skills-list">
+              ${skillsHtml}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Trackers -->
+        ${trackers.length > 0 ? `
+          <div class="mal-card">
+            <div class="mal-section-title">⚡ Interactive Resource Trackers</div>
+            <div class="mal-trackers-grid">
+              ${trackersHtml}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Features -->
+        ${features.length > 0 ? `
+          <div class="mal-card">
+            <div class="mal-section-title">✨ Features & Traits</div>
+            <div style="font-size:10px;color:var(--text-muted);display:flex;flex-direction:column;gap:4px;">
+              ${features.map(f => `<div>• <b>${typeof f === 'string' ? f : f.name}</b> ${typeof f === 'object' && f.desc ? ': ' + f.desc : ''}</div>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function updateActiveCharacterUI() {
+      const activeId = getActiveCharId();
+      const customList = getCustomCharacters();
+      const selector = document.getElementById('charSelector');
+      const delBtn = document.getElementById('btnDeleteChar');
+
+      if (selector) {
+        selector.innerHTML = '';
+        const optDefault = document.createElement('option');
+        optDefault.value = 'malexius';
+        optDefault.innerText = '🩸 Malexius, The One Who Defied Fate (Lv 20)';
+        selector.appendChild(optDefault);
+
+        customList.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.innerText = `👤 ${c.name} (${c.subtitle || ''})`;
+          selector.appendChild(opt);
+        });
+
+        selector.value = activeId;
+      }
+
+      if (delBtn) {
+        delBtn.style.display = activeId === 'malexius' ? 'none' : 'flex';
+      }
+
+      const tabIcon = document.getElementById('tabCharIcon');
+      const tabLabel = document.getElementById('tabCharLabel');
+      const charDisplayName = document.getElementById('charDisplayName');
+      const activeCombatant = document.getElementById('activeCombatantName');
+      const builtinView = document.getElementById('malexiusBuiltinView');
+      const customView = document.getElementById('customCharView');
+
+      if (activeId === 'malexius') {
+        if (builtinView) builtinView.style.display = 'flex';
+        if (customView) customView.style.display = 'none';
+        if (tabIcon) tabIcon.innerText = '🩸';
+        if (tabLabel) tabLabel.innerText = 'Malexius';
+        if (charDisplayName) charDisplayName.innerText = 'MALEXIUS, THE ONE WHO DEFIED FATE';
+        if (activeCombatant) activeCombatant.innerText = 'Malexius';
+      } else {
+        const char = customList.find(c => c.id === activeId) || MALEXIUS_CHAR;
+        if (builtinView) builtinView.style.display = 'none';
+        if (customView) {
+          customView.style.display = 'flex';
+          renderCustomCharacter(char);
+        }
+        const sName = char.shortName || char.name.split(' ')[0];
+        if (tabIcon) tabIcon.innerText = '👤';
+        if (tabLabel) tabLabel.innerText = sName.length > 9 ? sName.slice(0, 9) + '…' : sName;
+        if (charDisplayName) charDisplayName.innerText = char.name.toUpperCase();
+        if (activeCombatant) activeCombatant.innerText = char.name;
+      }
+    }
+
+    function setupDropzone() {
+      const dropzone = document.getElementById('sheetDropzone');
+      if (!dropzone) return;
+      ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('dragover');
+        });
+      });
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+          processUploadedFile(files[0]);
+        }
+      });
+    }
+
+    // Character Custom Action Roller
+    function rollMalexiusAction(name, dMap, mod, mode = 'normal') {
+      resetSelection(false);
+      for (const [d, c] of Object.entries(dMap || {})) {
+        diceCounts[d] = c;
+        updateDieUI(d);
+      }
+      modifier = mod || 0;
+      const modEl = document.getElementById('modDisplay');
+      if (modEl) modEl.innerText = (modifier >= 0 ? '+' : '') + modifier;
+      rollMode = mode;
+      const btnNorm = document.getElementById('btnNorm');
+      const btnAdv = document.getElementById('btnAdv');
+      const btnDis = document.getElementById('btnDis');
+      if (btnNorm) btnNorm.classList.toggle('active', mode === 'normal');
+      if (btnAdv) btnAdv.classList.toggle('active', mode === 'adv');
+      if (btnDis) btnDis.classList.toggle('active', mode === 'dis');
+
+      switchTab('dice');
+      rollDice();
+
+      // Set custom action header banner
+      const activeChar = getActiveCharacter();
+      const badgePrefix = document.getElementById('heroBadgePrefix');
+      const badgeType = document.getElementById('heroBadgeType');
+      const charTag = (activeChar && activeChar.id !== 'malexius') ? (activeChar.shortName || activeChar.name.split(' ')[0]) : 'MALEXIUS';
+      if (badgePrefix) badgePrefix.innerText = charTag.toUpperCase() + ':';
+      if (badgeType) badgeType.innerText = name.toUpperCase();
+    }
+
+    // Trackers
+    function toggleTracker(elemId, maxVal) {
+      const el = document.getElementById(elemId);
+      if (!el) return;
+      const parts = el.innerText.split('/');
+      let cur = parseInt(parts[0]) || 0;
+      cur = cur >= maxVal ? 0 : maxVal;
+      el.innerText = `${cur}/${maxVal}`;
+    }
+
+    function stepTracker(elemId, delta, minVal, maxVal) {
+      const el = document.getElementById(elemId);
+      if (!el) return;
+      const parts = el.innerText.split('/');
+      let cur = parseInt(parts[0]) || 0;
+      cur = Math.max(minVal, Math.min(maxVal, cur + delta));
+      el.innerText = `${cur}/${maxVal}`;
+    }
+
+    // Presets
+    function applyPreset(dMap, mod, name) {
+      resetSelection(false);
+      for (const [d, c] of Object.entries(dMap)) {
+        diceCounts[d] = c;
+        updateDieUI(d);
+      }
+      modifier = mod;
+      document.getElementById('modDisplay').innerText = (mod >= 0 ? '+' : '') + mod;
+      switchTab('dice');
+      rollDice();
+
+      const badgePrefix = document.getElementById('heroBadgePrefix');
+      const badgeType = document.getElementById('heroBadgeType');
+      if (badgePrefix) badgePrefix.innerText = 'PRESET:';
+      if (badgeType) badgeType.innerText = name.toUpperCase();
+    }
+
+    // History
+    function renderHistory() {
+      const list = document.getElementById('histList');
+      list.innerHTML = '';
+      if (history.length === 0) {
+        list.innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 25px 0; font-size: 11px;">No roll history yet.</div>';
+        return;
+      }
+      history.forEach(item => {
+        const d = document.createElement('div');
+        d.className = 'hist-entry';
+        d.innerHTML = `
+          <div class="hist-entry-top">
+            <span>${item.char}</span>
+            <span>${item.time}</span>
+          </div>
+          <div class="hist-entry-mid">
+            <span class="hist-entry-formula">${item.formula}</span>
+            <span class="hist-entry-val">${item.total}</span>
+          </div>
+          <div class="hist-entry-sub">${item.math}</div>
+        `;
+        list.appendChild(d);
+      });
+    }
+
+    function clearHistory() {
+      history = [];
+      localStorage.removeItem('dnd_hist');
+      renderHistory();
+    }
+
+    // Sound (Web Audio API)
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem('dnd_sound', soundEnabled);
+      updateSoundBtn();
+    }
+    function updateSoundBtn() {
+      document.getElementById('soundBtn').innerText = soundEnabled ? '🔊' : '🔇';
+    }
+
+    function playClickSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.06, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.04);
+      } catch (e) {}
+    }
+
+    function playRollSound() {
+      if (!soundEnabled) return;
+      if (typeof audioEngine !== 'undefined') {
+        audioEngine.playDiceClatter();
+      }
+    }
+
+    // Window Controls: Pin, Minimize, Maximize, Close
+    function togglePin() {
+      isPinned = !isPinned;
+      document.getElementById('pinBtn').classList.toggle('active-pin', isPinned);
+      if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.set_on_top(isPinned);
+      }
+    }
+
+    function minimizeWidget() {
+      if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.minimize();
+      }
+    }
+
+    function toggleMaximize() {
+      if (window.pywebview && window.pywebview.api && window.pywebview.api.toggle_maximize) {
+        window.pywebview.api.toggle_maximize().then(res => {
+          isMaximized = res;
+          const maxBtn = document.getElementById('maxBtn');
+          if (maxBtn) maxBtn.innerHTML = isMaximized ? '&#128471;' : '&#9633;';
+        });
+      }
+    }
+
+    function closeWidget() {
+      if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.close();
+      } else {
+        window.close();
+      }
+    }
+
+    // ==========================================
+    // FEATURE 3: TABLETOP AUDIO SOUNDBOARD & AMBIENCE ENGINE
+    // ==========================================
+    class TabletopAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.masterGain = null;
+        this.ambientNodes = {};
+        this.volume = 0.5;
+        this.currentAmbience = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+            this.masterGain = this.ctx.createGain();
+            this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+            this.masterGain.connect(this.ctx.destination);
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      setVolume(val) {
+        this.volume = Math.max(0, Math.min(1, parseFloat(val) / 100));
+        if (this.masterGain && this.ctx) {
+          this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+        }
+      }
+
+      playDiceClatter() {
+        if (!soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const numHits = 5 + Math.floor(Math.random() * 4);
+        for (let i = 0; i < numHits; i++) {
+          const delay = (i * 0.04) + Math.random() * 0.03;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = Math.random() > 0.5 ? 'triangle' : 'sine';
+          osc.frequency.setValueAtTime(140 + Math.random() * 180, now + delay);
+          osc.frequency.exponentialRampToValueAtTime(30, now + delay + 0.04);
+          gain.gain.setValueAtTime(0.2 * Math.pow(0.8, i), now + delay);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.04);
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+          osc.start(now + delay);
+          osc.stop(now + delay + 0.05);
+        }
+      }
+
+      playCritBoom() {
+        if (!soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const sub = this.ctx.createOscillator();
+        const subGain = this.ctx.createGain();
+        sub.type = 'sine';
+        sub.frequency.setValueAtTime(130, now);
+        sub.frequency.exponentialRampToValueAtTime(35, now + 0.6);
+        subGain.gain.setValueAtTime(0.4, now);
+        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+        sub.connect(subGain);
+        subGain.connect(this.masterGain);
+        sub.start(now);
+        sub.stop(now + 0.6);
+
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.04);
+          gain.gain.setValueAtTime(0.15, now + idx * 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+          osc.start(now + idx * 0.04);
+          osc.stop(now + 0.9);
+        });
+      }
+
+      playFumbleShatter() {
+        if (!soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        [185.00, 196.00, 220.00].forEach((freq) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, now);
+          osc.frequency.exponentialRampToValueAtTime(60, now + 0.4);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+          osc.start(now);
+          osc.stop(now + 0.45);
+        });
+      }
+
+      playBladeClash() {
+        if (!soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(1800, now);
+        osc.frequency.exponentialRampToValueAtTime(400, now + 0.15);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(now);
+        osc.stop(now + 0.16);
+      }
+
+      playMagicChime() {
+        if (!soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        [880, 1108.73, 1318.51, 1760].forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+          gain.gain.setValueAtTime(0.12, now + idx * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+          osc.start(now + idx * 0.06);
+          osc.stop(now + 0.65);
+        });
+      }
+
+      createNoiseNode() {
+        const bufferSize = this.ctx.sampleRate * 2;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true;
+        return noise;
+      }
+
+      toggleAmbience(type) {
+        this.init();
+        if (this.currentAmbience === type) {
+          this.stopAmbience();
+          return null;
+        }
+        this.stopAmbience();
+        this.currentAmbience = type;
+
+        if (type === 'tavern') {
+          const noise = this.createNoiseNode();
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(450, this.ctx.currentTime);
+          const gain = this.ctx.createGain();
+          gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.masterGain);
+          noise.start();
+          this.ambientNodes = { noise, gain };
+        } else if (type === 'rain') {
+          const noise = this.createNoiseNode();
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(800, this.ctx.currentTime);
+          filter.Q.setValueAtTime(0.8, this.ctx.currentTime);
+          const gain = this.ctx.createGain();
+          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.masterGain);
+          noise.start();
+          this.ambientNodes = { noise, gain };
+        } else if (type === 'astral') {
+          const osc1 = this.ctx.createOscillator();
+          const osc2 = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc1.type = 'sine';
+          osc2.type = 'sine';
+          osc1.frequency.setValueAtTime(108, this.ctx.currentTime);
+          osc2.frequency.setValueAtTime(109.5, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(this.masterGain);
+          osc1.start();
+          osc2.start();
+          this.ambientNodes = { osc1, osc2, gain };
+        }
+        return type;
+      }
+
+      stopAmbience() {
+        if (this.ambientNodes) {
+          if (this.ambientNodes.noise) try { this.ambientNodes.noise.stop(); } catch(e){}
+          if (this.ambientNodes.osc1) try { this.ambientNodes.osc1.stop(); } catch(e){}
+          if (this.ambientNodes.osc2) try { this.ambientNodes.osc2.stop(); } catch(e){}
+          this.ambientNodes = {};
+        }
+        this.currentAmbience = null;
+      }
+    }
+
+    const audioEngine = new TabletopAudioEngine();
+
+    function toggleSoundboard() {
+      const drawer = document.getElementById('soundboardDrawer');
+      if (drawer) {
+        drawer.style.display = drawer.style.display === 'none' ? 'flex' : 'none';
+      }
+    }
+
+    function updateAudioVolume(val) {
+      audioEngine.setVolume(val);
+    }
+
+    function toggleAmbienceMode(type) {
+      const active = audioEngine.toggleAmbience(type);
+      ['Tavern', 'Rain', 'Astral'].forEach(name => {
+        const card = document.getElementById('amb' + name);
+        const st = document.getElementById('st' + name);
+        const isCurrent = active === name.toLowerCase();
+        if (card) card.classList.toggle('playing', isCurrent);
+        if (st) st.innerText = isCurrent ? 'Memutar ▶' : 'Mati';
+      });
+    }
+
+    // ==========================================
+    // FEATURE 1: COMBAT & TURN ORDER TRACKER LOGIC
+    // ==========================================
+    let combatState = {
+      round: 1,
+      turnIndex: 0,
+      combatants: [
+        { id: 'malexius', name: 'Malexius (Kamu)', hp: 193, maxHp: 193, ac: 23, initMod: 16, initRoll: 26, isPlayer: true, conditions: [] }
+      ]
+    };
+
+    function toggleCombatHUD() {
+      const hud = document.getElementById('combatHud');
+      const btn = document.getElementById('combatBtn');
+      if (hud) {
+        const isHidden = hud.style.display === 'none';
+        hud.style.display = isHidden ? 'flex' : 'none';
+        if (btn) btn.classList.toggle('gold', isHidden);
+      }
+      renderCombatants();
+    }
+
+    function renderCombatants() {
+      const roster = document.getElementById('combatantsRoster');
+      if (!roster) return;
+      roster.innerHTML = '';
+
+      combatState.combatants.forEach((c, idx) => {
+        const isActive = idx === combatState.turnIndex;
+        const card = document.createElement('div');
+        card.className = `roster-card ${isActive ? 'active' : ''}`;
+        card.onclick = () => { combatState.turnIndex = idx; renderCombatants(); updateActiveTurnUI(); };
+
+        const condIcons = c.conditions.map(cd => cd === 'Concentrating' ? '🧠' : cd === 'Invisible' ? '👻' : '⚡').join('');
+
+        card.innerHTML = `
+          <span class="roster-init">${c.initRoll || '--'}</span>
+          <span class="roster-name">${c.name} ${condIcons}</span>
+          <span class="roster-hp">${c.hp}/${c.maxHp}</span>
+          ${!c.isPlayer ? `<span onclick="event.stopPropagation(); removeCombatant('${c.id}')" style="opacity:0.6;font-size:9px;">✕</span>` : ''}
+        `;
+        roster.appendChild(card);
+      });
+      updateActiveTurnUI();
+    }
+
+    function updateActiveTurnUI() {
+      const current = combatState.combatants[combatState.turnIndex] || combatState.combatants[0];
+      if (!current) return;
+      const nameEl = document.getElementById('activeCombatantName');
+      const acEl = document.getElementById('activeCombatantAC');
+      const hpEl = document.getElementById('activeCombatantHP');
+      const maxHpEl = document.getElementById('activeCombatantMaxHP');
+      const roundEl = document.getElementById('combatRound');
+
+      if (nameEl) nameEl.innerText = current.name;
+      if (acEl) acEl.innerText = `🛡️ AC ${current.ac || 15}`;
+      if (hpEl) hpEl.innerText = current.hp;
+      if (maxHpEl) maxHpEl.innerText = current.maxHp;
+      if (roundEl) roundEl.innerText = combatState.round;
+
+      // Update condition chips
+      document.querySelectorAll('.cond-chip').forEach(chip => {
+        const cond = chip.getAttribute('data-cond');
+        chip.classList.toggle('active', current.conditions.includes(cond));
+      });
+    }
+
+    function nextCombatTurn() {
+      if (combatState.combatants.length === 0) return;
+      combatState.turnIndex = (combatState.turnIndex + 1) % combatState.combatants.length;
+      if (combatState.turnIndex === 0) {
+        combatState.round++;
+      }
+      renderCombatants();
+      audioEngine.playBladeClash();
+    }
+
+    function nextCombatRound() {
+      combatState.round++;
+      combatState.turnIndex = 0;
+      renderCombatants();
+      audioEngine.playMagicChime();
+    }
+
+    function resetCombat() {
+      const activeChar = typeof getActiveCharacter === 'function' ? getActiveCharacter() : null;
+      const pName = activeChar ? (activeChar.shortName || activeChar.name) : 'Malexius';
+      const pHp = (activeChar && activeChar.hp) ? activeChar.hp : 193;
+      const pAc = (activeChar && activeChar.ac) ? (typeof activeChar.ac === 'number' ? activeChar.ac : parseInt(activeChar.ac) || 23) : 23;
+      const pInit = (activeChar && activeChar.initMod !== undefined) ? activeChar.initMod : 16;
+      combatState.round = 1;
+      combatState.turnIndex = 0;
+      combatState.combatants = [
+        { id: activeChar ? activeChar.id : 'malexius', name: `${pName} (Kamu)`, hp: pHp, maxHp: pHp, ac: pAc, initMod: pInit, initRoll: pInit + 10, isPlayer: true, conditions: [] }
+      ];
+      renderCombatants();
+    }
+
+    function adjustActiveHP(delta) {
+      const current = combatState.combatants[combatState.turnIndex];
+      if (!current) return;
+      current.hp = Math.max(0, Math.min(current.maxHp, current.hp + delta));
+      updateActiveTurnUI();
+      renderCombatants();
+    }
+
+    function resetActiveHP() {
+      const current = combatState.combatants[combatState.turnIndex];
+      if (!current) return;
+      current.hp = current.maxHp;
+      updateActiveTurnUI();
+      renderCombatants();
+    }
+
+    function toggleCondition(cond) {
+      const current = combatState.combatants[combatState.turnIndex];
+      if (!current) return;
+      const idx = current.conditions.indexOf(cond);
+      if (idx === -1) {
+        current.conditions.push(cond);
+      } else {
+        current.conditions.splice(idx, 1);
+      }
+      updateActiveTurnUI();
+      renderCombatants();
+    }
+
+    function addCombatant() {
+      const nameInput = document.getElementById('newCombatantName');
+      const hpInput = document.getElementById('newCombatantHP');
+      const initInput = document.getElementById('newCombatantInitMod');
+      if (!nameInput || !nameInput.value.trim()) return;
+
+      const name = nameInput.value.trim();
+      const hp = parseInt(hpInput.value) || 50;
+      const initMod = parseInt(initInput.value) || 2;
+      const id = 'c_' + Date.now();
+
+      combatState.combatants.push({
+        id: id,
+        name: name,
+        hp: hp,
+        maxHp: hp,
+        ac: 15,
+        initMod: initMod,
+        initRoll: Math.floor(Math.random() * 20) + 1 + initMod,
+        isPlayer: false,
+        conditions: []
+      });
+
+      nameInput.value = '';
+      if (hpInput) hpInput.value = '';
+      if (initInput) initInput.value = '';
+      renderCombatants();
+    }
+
+    function removeCombatant(id) {
+      combatState.combatants = combatState.combatants.filter(c => c.id !== id);
+      if (combatState.turnIndex >= combatState.combatants.length) {
+        combatState.turnIndex = 0;
+      }
+      renderCombatants();
+    }
+
+    function rollAllInitiative() {
+      combatState.combatants.forEach(c => {
+        const roll = Math.floor(Math.random() * 20) + 1;
+        c.initRoll = roll + (c.initMod || 0);
+      });
+      combatState.combatants.sort((a, b) => b.initRoll - a.initRoll);
+      combatState.turnIndex = 0;
+      renderCombatants();
+      audioEngine.playDiceClatter();
+    }
+
+    // ==========================================
+    // FEATURE 2: CUSTOM DICE MACRO & COMBO VAULT LOGIC
+    // ==========================================
+    function getStoredMacros() {
+      try {
+        return JSON.parse(localStorage.getItem('dnd_custom_macros')) || [];
+      } catch(e) {
+        return [];
+      }
+    }
+
+    function saveCustomMacro() {
+      const nameInput = document.getElementById('macroNameInput');
+      const formulaInput = document.getElementById('macroFormulaInput');
+      const tagInput = document.getElementById('macroTagInput');
+      if (!nameInput || !formulaInput) return;
+      const name = nameInput.value.trim();
+      const formula = formulaInput.value.trim();
+      const tag = tagInput ? tagInput.value : 'dmg';
+
+      if (!name || !formula) {
+        alert('Mohon isi nama kombo dan rumus dadunya!');
+        return;
+      }
+
+      const macros = getStoredMacros();
+      macros.push({ id: 'm_' + Date.now(), name, formula, tag });
+      localStorage.setItem('dnd_custom_macros', JSON.stringify(macros));
+
+      nameInput.value = '';
+      formulaInput.value = '';
+      renderCustomMacros();
+      audioEngine.playMagicChime();
+    }
+
+    function deleteCustomMacro(id) {
+      let macros = getStoredMacros();
+      macros = macros.filter(m => m.id !== id);
+      localStorage.setItem('dnd_custom_macros', JSON.stringify(macros));
+      renderCustomMacros();
+    }
+
+    function renderCustomMacros() {
+      const container = document.getElementById('userMacrosList');
+      if (!container) return;
+      const macros = getStoredMacros();
+
+      if (macros.length === 0) {
+        container.innerHTML = `
+          <div style="font-size:10px;color:var(--text-dim);font-style:italic;padding:4px 0;">
+            Belum ada makro kustom. Buat kombo serangan atau mantra favoritmu di atas!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      macros.forEach(m => {
+        const item = document.createElement('div');
+        item.className = 'macro-item-card';
+        item.innerHTML = `
+          <div onclick="executeAIRoll('${m.formula}')" style="cursor:pointer;flex:1;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="macro-tag ${m.tag}">${m.tag.toUpperCase()}</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text);">${m.name}</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:10px;font-weight:800;color:var(--gold);">${m.formula}</span>
+            <button class="combat-btn gold" onclick="executeAIRoll('${m.formula}')" style="padding:2px 6px;">🎲 Roll</button>
+            <button class="combat-btn red" onclick="deleteCustomMacro('${m.id}')" style="padding:2px 5px;">✕</button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Call on load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCustomMacros();
+      renderCombatants();
+      if (typeof updateActiveCharacterUI === 'function') updateActiveCharacterUI();
+      if (typeof setupDropzone === 'function') setupDropzone();
+    });
+  </script>
+</body>
+</html>
