@@ -1,26 +1,30 @@
-# 🎲 D&D Beyond Dice Companion Widget
+# 🎲 Tabletop RPG Dice Companion Widget
 
-Floating desktop companion widget for D&D 5e tabletop gaming, inspired by Nuppi aesthetic. Built with Python (`pywebview`), Microsoft Edge WebView2, and styled with high-performance CSS/JavaScript.
+A lightweight floating desktop companion widget for tabletop gaming. Built with Python (`pywebview`), WebView2, and modern HTML/CSS/JavaScript.
+
+<p align="center">
+  <img src="widget_preview.png" alt="Dice Companion Preview" width="460" />
+</p>
 
 ## ✨ Features
-- **2D Polyhedral Dice Roller**: Roll d20, d12, d100, d10, d8, d6, d4 with Advantage / Disadvantage, modifiers, and authentic roll formulas.
-- **Dynamic Reroll System**: One-click reroll for 1s & 2s (Great Weapon Fighting / Savage Attacker) or reroll all dice.
-- **Natural 1 & Natural 20 Detection**: Exclusive critical miss / critical hit audio and visual animations on single 1d20 rolls.
-- **Combat & Turn Order Tracker HUD**: Initiative tracker, HP damage/healing stepper, and 8 quick D&D status condition chips.
-- **Combo & Macro Vault**: Pre-configured signature attack combos plus a custom macro builder with one-click rolling.
-- **Procedural Tabletop Audio & Ambience**: Synthesized sound effects (dice rattle, crit boom, fumble shatter, blade clash, spell chime) plus procedural background ambiences (Tavern Hearth, Dungeon Rain, Astral Drone).
+- **Polyhedral Dice Roller**: Full polyhedral set (d20, d12, d100, d10, d8, d6, d4) with Advantage, Disadvantage, modifiers, and formula breakdown.
+- **Dynamic Reroll System**: Click any individual die to reroll, or use quick actions to reroll 1s & 2s or reroll all.
+- **Critical Detection**: Audio and visual animations on Natural 20 and Natural 1 rolls.
+- **Combat & Turn Order Tracker**: Initiative order tracker, HP adjustment stepper, and status condition chips.
+- **Combo & Macro Vault**: Pre-configured combat combos plus custom macro builder with one-click rolling.
+- **Tabletop Audio & Ambience**: Synthesized soundboard effects and background atmospheric ambiences.
 - **Interactive Character Sheet & Sheet Importer**:
-  - Built-in customizable character sheet template for quick play.
-  - **Dynamic Sheet Importer**: Import your own character sheets via `.pdf`, `.txt`, or `.md` files or direct paste.
-  - Automatic extraction of D&D 5e stats, saving throws, weapons, actions, and skills powered by Google Gemini AI.
-  - Interactive 1-click rolls for attacks, damage, ability checks, and saving throws directly from your sheet.
-- **AI Companion & Rules Oracle**: Powered by Google Gemini AI to describe dramatic cinematic action narrations, explain 5e rules, or calculate tactical options.
-- **Window Controls**: Always on top toggle (Pin 📌), size presets (S / M / L), interactive edge resizers, and minimal dark scrollbars.
+  - Built-in customizable character sheet template.
+  - Import sheets via `.pdf`, `.txt`, or `.md` files or direct paste.
+  - Automated attribute and action extraction powered by Gemini AI.
+  - 1-click rolling directly from sheet items.
+- **AI Companion**: In-app AI assistant for narrative descriptions, rules guidance, and combat tactics.
+- **Window Controls**: Always on top (Pin 📌), size presets (S / M / L), draggable header, and edge resizers.
 
 ## 🚀 Running from Source
 ```bash
 # Install dependencies
-pip install pywebview pypdf
+pip install pywebview pypdf google-genai
 
 # Launch application
 python dnd_companion/app.py
@@ -30,3 +34,9 @@ python dnd_companion/app.py
 ```bash
 pyinstaller --noconsole --onefile --icon="dnd_companion/dnd_dice.ico" --add-data "dnd_companion/index.html;." --distpath="." --name="DndDiceWidget" dnd_companion/app.py
 ```
+
+## ⚙️ AI Configuration
+Place your Gemini API key inside `dnd_companion/api_key.txt` or configure it directly in the application settings.
+
+## 📄 License
+MIT License
